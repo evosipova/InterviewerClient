@@ -9,22 +9,7 @@ struct RegisterView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Добро пожаловать! 👋")
-                .font(.title)
-                .bold()
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(.leading, 20)
-                .padding(.bottom, 5)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            Text("Введите ваш email и пароль для регистрации.")
-                .font(.body)
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.leading)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 30)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            CustomNavBar(title: "Регистрация", onBack: onBack)
             
             VStack(spacing: 15) {
                 TextField("Email", text: $email)
@@ -42,18 +27,22 @@ struct RegisterView: View {
             Spacer()
             
             Button(action: onNext) {
-                Text("Далее")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .font(.headline)
+                HStack {
+                    Text("Далее")
+                        .font(.headline)
+                        .bold()
+                    Image(systemName: "arrow.right")
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.black)
+                .foregroundColor(.white)
+                .cornerRadius(12)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
         }
-        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
 }
 

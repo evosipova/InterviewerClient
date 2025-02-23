@@ -3,41 +3,46 @@ import SwiftUI
 struct OnboardingView: View {
     var onLogin: () -> Void
     var onRegister: () -> Void
-    
+
     var body: some View {
-        VStack(spacing: 20) {
+        VStack {
+            Spacer()
+
             Image(systemName: "person.circle.fill")
                 .resizable()
                 .frame(width: 80, height: 80)
                 .foregroundColor(.black)
-            
+                .padding(.bottom, 20)
+
             Text("Привет!")
                 .font(.title)
                 .bold()
-            
-            VStack {
+                .padding(.bottom, 30)
+
+            Spacer()
+
+            VStack(spacing: 15) {
                 Button(action: onLogin) {
                     Text("Войти")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color.black)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .font(.headline)
                 }
-                .padding(.horizontal, 20)
-                
+
                 Button(action: onRegister) {
-                    Text("Регистрация")
+                    Text("Зарегистрироваться")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.green)
+                        .background(Color.black)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .font(.headline)
                 }
-                .padding(.horizontal, 20)
             }
+            .padding(.horizontal, 20)
             .padding(.bottom, 30)
         }
     }
@@ -48,4 +53,3 @@ struct OnboardingView_Previews: PreviewProvider {
         OnboardingView(onLogin: {}, onRegister: {})
     }
 }
-

@@ -1,19 +1,20 @@
 import UIKit
 import SwiftUI
 
-class RegisterViewController: UIViewController {
+class TabBarViewController: UIViewController {
     var coordinator: AppCoordinator?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-        
-        let registerView = RegisterView(
-            onBack: { [weak self] in self?.coordinator?.goBack() },
-            onNext: { [weak self] in self?.coordinator?.showProfileSetup() }
-        )
-        
-        let hostingController = UIHostingController(rootView: registerView)
+
+        guard let coordinator = coordinator else {
+            return
+        }
+
+        let tabBarView = TabBarView(coordinator: coordinator)
+        let hostingController = UIHostingController(rootView: tabBarView.environmentObject(coordinator))
+
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.view.frame = view.bounds

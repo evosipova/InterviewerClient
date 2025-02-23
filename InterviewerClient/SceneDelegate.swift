@@ -8,7 +8,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let navigationController = UINavigationController()
-        applyCustomBackButtonStyle()
+        
         appCoordinator = AppCoordinator(navigationController: navigationController)
         appCoordinator?.start()
         
@@ -16,24 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
-    
-    private func applyCustomBackButtonStyle() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.setBackIndicatorImage(
-            UIImage(systemName: "chevron.backward")?
-                .withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)),
-            transitionMaskImage: UIImage(systemName: "chevron.backward")
-        )
-        
-        appearance.shadowColor = .clear
-        appearance.backgroundColor = .clear
 
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-    }
-    
     func sceneDidDisconnect(_ scene: UIScene) {}
     
     func sceneDidBecomeActive(_ scene: UIScene) {}

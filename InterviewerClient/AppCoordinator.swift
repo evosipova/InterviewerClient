@@ -1,7 +1,9 @@
 import UIKit
+import SwiftUI
 
-class AppCoordinator {
-    var navigationController: UINavigationController
+@MainActor
+class AppCoordinator: ObservableObject {
+    @Published var navigationController: UINavigationController
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -31,7 +33,25 @@ class AppCoordinator {
         navigationController.pushViewController(profileSetupVC, animated: true)
     }
     
+    func showKnowledgeLevel() {
+        let knowledgeLevelVC = KnowledgeLevelViewController()
+        knowledgeLevelVC.coordinator = self
+        navigationController.pushViewController(knowledgeLevelVC, animated: true)
+    }
+    
+    func showTabBar() {
+        let tabBarVC = TabBarViewController()
+        tabBarVC.coordinator = self
+        navigationController.setViewControllers([tabBarVC], animated: true)
+    }
+    
     func goBack() {
         navigationController.popViewController(animated: true)
+    }
+    
+    func logout() {
+        let onboardingVC = OnboardingViewController()
+        onboardingVC.coordinator = self
+        navigationController.setViewControllers([onboardingVC], animated: true)
     }
 }

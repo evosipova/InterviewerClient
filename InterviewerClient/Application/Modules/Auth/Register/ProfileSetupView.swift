@@ -11,15 +11,7 @@ struct ProfileSetupView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Заполните данные о себе")
-                .font(.title)
-                .bold()
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(.leading, 20)
-                .padding(.bottom, 5)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
+            CustomNavBar(title: "Заполните данные", onBack: onBack)
             
             VStack(spacing: 15) {
                 TextField("ФИО", text: $fullName)
@@ -36,7 +28,6 @@ struct ProfileSetupView: View {
                 }
                 .padding(.horizontal, 20)
                 
-                
                 Picker("Выберите пол", selection: $selectedGender) {
                     ForEach(genders, id: \.self) { gender in
                         Text(gender)
@@ -44,26 +35,28 @@ struct ProfileSetupView: View {
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding(.horizontal, 20)
-                
             }
             .padding(.bottom, 30)
             
             Spacer()
             
-            
             Button(action: onComplete) {
-                Text("Завершить регистрацию")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .font(.headline)
+                HStack {
+                    Text("Далее")
+                        .font(.headline)
+                        .bold()
+                    Image(systemName: "arrow.right")
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.black)
+                .foregroundColor(.white)
+                .cornerRadius(12)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
         }
-        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true) 
     }
 }
 
@@ -72,4 +65,3 @@ struct ProfileSetupView_Previews: PreviewProvider {
         ProfileSetupView(onBack: {}, onComplete: {})
     }
 }
-

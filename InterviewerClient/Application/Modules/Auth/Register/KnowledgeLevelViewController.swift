@@ -1,19 +1,19 @@
 import UIKit
 import SwiftUI
 
-class RegisterViewController: UIViewController {
+class KnowledgeLevelViewController: UIViewController {
     var coordinator: AppCoordinator?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        let registerView = RegisterView(
+        let knowledgeLevelView = KnowledgeLevelView(
             onBack: { [weak self] in self?.coordinator?.goBack() },
-            onNext: { [weak self] in self?.coordinator?.showProfileSetup() }
+            onNext: { [weak self] in self?.coordinator?.showTabBar() }
         )
         
-        let hostingController = UIHostingController(rootView: registerView)
+        let hostingController = UIHostingController(rootView: knowledgeLevelView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.view.frame = view.bounds

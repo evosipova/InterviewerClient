@@ -6,10 +6,11 @@ class ProfileSetupViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.backButtonDisplayMode = .minimal
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
         let profileSetupView = ProfileSetupView(
             onBack: { [weak self] in self?.coordinator?.goBack() },
-            onComplete: { [weak self] in print("Регистрация завершена!") }
+            onComplete: { [weak self] in self?.coordinator?.showKnowledgeLevel() }
         )
         
         let hostingController = UIHostingController(rootView: profileSetupView)
