@@ -2,23 +2,17 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var coordinator: AppCoordinator
-    
+
     @AppStorage("selectedTheme") private var selectedTheme: String = "Системная"
-    
+
     @State private var fullName: String = "annaliza2011"
     @State private var birthdate = Date()
     @State private var selectedGender = "Не указывать"
     @State private var knowledgeLevel = "Средний"
-    @State private var isEditing = false
-    @State private var randomOrder = true
-    @State private var selectedQuestionCount = "Все"
     @State private var showHistorySheet = false
-    
-    let genders = ["Мужской", "Женский", "Не указывать"]
-    let knowledgeLevels = ["Новичок", "Средний", "Продвинутый"]
-    let questionCounts = ["5", "15", "Все"]
+
     let themes = ["Системная", "Светлая", "Тёмная"]
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -29,47 +23,19 @@ struct ProfileView: View {
                             .frame(width: 80, height: 80)
                             .foregroundColor(.blue)
                             .padding(.top, 10)
-                        
+
                         HStack {
                             Text(fullName)
                                 .font(.title2)
                                 .bold()
-                            Button(action: { isEditing.toggle() }) {
+                            NavigationLink(destination: EditProfileView(fullName: $fullName, birthdate: $birthdate, selectedGender: $selectedGender, knowledgeLevel: $knowledgeLevel)) {
                                 Image(systemName: "pencil")
                                     .foregroundColor(.gray)
                             }
                         }
                     }
                     .padding(.bottom, 20)
-                    
-                    if isEditing {
-                        VStack(spacing: 10) {
-                            TextField("ФИО", text: $fullName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.horizontal, 20)
-                            
-                            Picker("Пол", selection: $selectedGender) {
-                                ForEach(genders, id: \.self) { Text($0) }
-                            }
-                            .pickerStyle(SegmentedPickerStyle())
-                            .padding(.horizontal, 20)
-                            
-                            DatePicker("Дата рождения", selection: $birthdate, displayedComponents: .date)
-                                .padding(.horizontal, 20)
-                            
-                            Picker("Уровень знаний", selection: $knowledgeLevel) {
-                                ForEach(knowledgeLevels, id: \.self) { Text($0) }
-                            }
-                            .pickerStyle(SegmentedPickerStyle())
-                            .padding(.horizontal, 20)
-                            
-                            Button("Сохранить") {
-                                isEditing.toggle()
-                            }
-                            .padding(.top, 10)
-                        }
-                    }
-                    
+
                     Button(action: { showHistorySheet.toggle() }) {
                         HStack {
                             Image(systemName: "clock.fill")
@@ -86,11 +52,11 @@ struct ProfileView: View {
                     .sheet(isPresented: $showHistorySheet) {
                         TestHistoryView()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Тема оформления")
                             .font(.headline)
-                        
+
                         HStack {
                             ForEach(themes, id: \.self) { theme in
                                 Button(action: {
@@ -109,7 +75,7 @@ struct ProfileView: View {
                                     }
                                     .frame(maxWidth: .infinity, minHeight: 70, maxHeight: 70)
                                     .padding()
-                                    .background(selectedTheme == theme ? Color.yellow.opacity(0.3) : Color.gray.opacity(0.2))
+                                    .background(selectedTheme == theme ? Color.pink.opacity(0.3) : Color.gray.opacity(0.2))
                                     .cornerRadius(10)
                                 }
                             }
@@ -119,35 +85,31 @@ struct ProfileView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
                     .padding(.horizontal, 20)
-                    
+
                     Button(action: {
                         coordinator.logout()
                     }) {
                         Text("Выйти")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.blue)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.red)
+                            .background(Color.gray.opacity(0.2))
                             .cornerRadius(10)
                     }
                     .padding(.horizontal, 20)
-                    .padding(.top, 20)
                 }
                 .padding(.bottom, 50)
             }
             .navigationBarTitle("Профиль", displayMode: .large)
             .background(Color(.systemBackground))
-            .onAppear {
-                applyTheme(selectedTheme)
-            }
         }
     }
-    
+
     private func applyTheme(_ theme: String) {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else { return }
-        
+
         switch theme {
         case "Светлая":
             window.overrideUserInterfaceStyle = .light

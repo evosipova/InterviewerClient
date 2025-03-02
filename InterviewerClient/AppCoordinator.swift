@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 class AppCoordinator: ObservableObject {
     @Published var navigationController: UINavigationController
+    @Published var selectedTab = 0
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
