@@ -20,7 +20,7 @@ struct TabBarView: View {
                 }
                 .tag(1)
 
-            Text("Чат")
+            ChatView()
                 .tabItem {
                     Image(systemName: "message.fill")
                     Text("Чат")
