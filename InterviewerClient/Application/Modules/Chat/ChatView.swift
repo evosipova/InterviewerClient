@@ -104,7 +104,7 @@ struct ChatView: View {
         gptMessages.append(OpenAIChatMessage(role: "user", content: messageText))
         saveChatHistory()
         
-        let msgToSend = messageText
+        _ = messageText
         messageText = ""
         textFieldHeight = 40
         
@@ -172,7 +172,7 @@ extension String {
             attributes: [.font: font],
             context: nil
         )
-        return ceil(boundingBox.height) + 20
+        return ceil(boundingBox.height) + 25
     }
 }
 

@@ -6,10 +6,12 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.backButtonDisplayMode = .minimal
-        let loginView = LoginView(onBack: { [weak self] in
-            self?.coordinator?.goBack()
-        })
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        let loginView = LoginView(
+            onBack: { [weak self] in self?.coordinator?.goBack() },
+            onNext: { [weak self] in self?.coordinator?.showTabBar() }
+        )
         
         let hostingController = UIHostingController(rootView: loginView)
         addChild(hostingController)

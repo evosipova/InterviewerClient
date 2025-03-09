@@ -5,7 +5,7 @@ struct NotificationSettingsView: View {
     @State private var isNotificationsEnabled: Bool = false
     @State private var notifications: [NotificationItem] = []
     @State private var showAddNotificationPopup = false
-
+    
     private let notificationMessages = [
         "Пора начать занятие! Поехали 💪",
         "Удели 5 минут улучшению своих навыков 🧠",
@@ -13,7 +13,7 @@ struct NotificationSettingsView: View {
         "Прогресс начинается с действий! 🔥",
         "Ты сможешь! Начни прямо сейчас ⏳"
     ]
-
+    
     var body: some View {
         ZStack {
             NavigationView {
@@ -54,13 +54,24 @@ struct NotificationSettingsView: View {
                 }
                 .listStyle(InsetGroupedListStyle())
                 .navigationBarTitle("Настройки уведомлений", displayMode: .inline)
-                .navigationBarItems(trailing:
-                    Button(action: { showAddNotificationPopup = true }) {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                    }
+                .navigationBarItems(
+                    leading: isNotificationsEnabled ? AnyView(
+                        Button(action: removeAllNotifications) {
+                            Image(systemName: "trash")
+                                .font(.title2)
+                                .foregroundColor(.red)
+                        }
+                    ) : AnyView(EmptyView()),
+                    
+                    trailing: isNotificationsEnabled ? AnyView(
+                        Button(action: { showAddNotificationPopup = true }) {
+                            Image(systemName: "plus")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                        }
+                    ) : AnyView(EmptyView())
                 )
+                .animation(.easeInOut, value: isNotificationsEnabled) // Анимация появления кнопок
                 .onAppear { loadNotificationSettings() }
             }
             
@@ -82,6 +93,12 @@ struct NotificationSettingsView: View {
         }
     }
 
+    private func removeAllNotifications() {
+        notifications.removeAll()
+        saveNotificationSettings()
+        removeScheduledNotifications()
+    }
+    
     private func handleNotificationToggle() {
         if isNotificationsEnabled {
             requestNotificationPermission()
@@ -93,7 +110,7 @@ struct NotificationSettingsView: View {
         }
         saveNotificationSettings()
     }
-
+    
     private func requestNotificationPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, _ in
             if !granted {
@@ -103,31 +120,31 @@ struct NotificationSettingsView: View {
             }
         }
     }
-
+    
     private func scheduleNotification(_ notification: NotificationItem) {
         for day in notification.sortedDays() {
             let content = UNMutableNotificationContent()
             content.title = "Interviewer 📢"
             content.body = notificationMessages.randomElement() ?? "Время для тренировки!"
             content.sound = .default
-
+            
             var dateComponents = Calendar.current.dateComponents([.hour, .minute], from: notification.time)
             dateComponents.weekday = dayToNumber(day)
-
+            
             let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            let request = UNNotificationRequest(identifier: "reminder_\(day)_\(notification.id)", content: content, trigger: trigger)
+            _ = UNNotificationRequest(identifier: "reminder_\(day)_\(notification.id)", content: content, trigger: trigger)
         }
     }
-
+    
     private func removeScheduledNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
-
+    
     private func dayToNumber(_ day: String) -> Int {
         let mapping: [String: Int] = ["Вс": 1, "Пн": 2, "Вт": 3, "Ср": 4, "Чт": 5, "Пт": 6, "Сб": 7]
         return mapping[day] ?? 2
     }
-
+    
     private func removeNotification(_ notification: NotificationItem) {
         notifications.removeAll { $0.id == notification.id }
         saveNotificationSettings()
@@ -136,13 +153,13 @@ struct NotificationSettingsView: View {
             scheduleNotification(notification)
         }
     }
-
+    
     private func saveNotificationSettings() {
         UserDefaults.standard.set(isNotificationsEnabled, forKey: "notificationsEnabled")
         let encodedData = try? JSONEncoder().encode(notifications)
         UserDefaults.standard.set(encodedData, forKey: "notificationsList")
     }
-
+    
     private func loadNotificationSettings() {
         isNotificationsEnabled = UserDefaults.standard.bool(forKey: "notificationsEnabled")
         if let savedData = UserDefaults.standard.data(forKey: "notificationsList"),
