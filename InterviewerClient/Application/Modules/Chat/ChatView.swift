@@ -9,23 +9,36 @@ struct ChatView: View {
     
     @State private var textFieldHeight: CGFloat = 50
     
+    @StateObject private var openAI = OpenAIService()
+    @State private var gptMessages: [OpenAIChatMessage] = [
+        OpenAIChatMessage(role: "system", content: "Ты ios-разработчик, задавай вопросы по swift")
+    ]
+    
     var body: some View {
         NavigationView {
             VStack {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 10) {
-                        ForEach(messages, id: \.self) { message in
-                            ChatBubble(message: message, isUser: !message.hasPrefix("🤖"))
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(messages.indices, id: \.self) { index in
+                                ChatBubble(message: messages[index], isUser: !messages[index].hasPrefix("🤖"))
+                                    .id(index)
+                            }
+                        }
+                        .padding()
+                        .onChange(of: messages) {
+                            scrollToBottom(proxy)
+                        }
+                        .onChange(of: textFieldHeight) {
+                            scrollToBottom(proxy)
                         }
                     }
-                    .padding()
                 }
                 
                 HStack(alignment: .bottom, spacing: 10) {
                     ZStack(alignment: .leading) {
                         if messageText.isEmpty {
                             Text("Введите сообщение...")
-                                .foregroundColor(.gray)
                                 .padding(.leading, 12)
                                 .padding(.vertical, 8)
                         }
@@ -37,7 +50,7 @@ struct ChatView: View {
                             .cornerRadius(12)
                             .opacity(messageText.isEmpty ? 0.6 : 1)
                             .scrollContentBackground(.hidden)
-                            .onChange(of: messageText) { _ in
+                            .onChange(of: messageText) {
                                 withAnimation {
                                     adjustTextFieldHeight()
                                 }
@@ -82,24 +95,34 @@ struct ChatView: View {
     private func sendMessage() {
         guard !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         
-        let userMessage = "🧑‍💻 " + messageText
-        
+        let userMessage = "🧑‍💻 " + messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         if currentChatIndex == nil {
             createNewChat()
         }
         
         messages.append(userMessage)
+        gptMessages.append(OpenAIChatMessage(role: "user", content: messageText))
         saveChatHistory()
         
+        let msgToSend = messageText
         messageText = ""
-        withAnimation {
-            textFieldHeight = 40
-        }
+        textFieldHeight = 40
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let response = "🤖 Это ответ ИИ 💡"
-            messages.append(response)
-            saveChatHistory()
+        Task {
+            do {
+                let gptReply = try await openAI.sendMessageToGPT(messages: gptMessages)
+                let trimmedReply = gptReply.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                let response = "🤖 " + trimmedReply
+                messages.append(response)
+                
+                gptMessages.append(OpenAIChatMessage(role: "assistant", content: trimmedReply))
+                saveChatHistory()
+                
+            } catch {
+                messages.append("🤖 Ошибка при получении ответа.")
+                saveChatHistory()
+            }
         }
     }
     
@@ -115,9 +138,7 @@ struct ChatView: View {
     }
     
     private func saveChatHistory() {
-        guard let index = currentChatIndex, index >= 0, index < chatHistory.count else {
-            return
-        }
+        guard let index = currentChatIndex, index >= 0, index < chatHistory.count else { return }
         
         chatHistory[index] = messages
     }
@@ -133,6 +154,12 @@ struct ChatView: View {
         let maxHeight: CGFloat = 100
         let newHeight = min(maxHeight, messageText.height(withConstrainedWidth: UIScreen.main.bounds.width - 100, font: .systemFont(ofSize: 17)))
         textFieldHeight = newHeight
+    }
+    
+    private func scrollToBottom(_ proxy: ScrollViewProxy) {
+        withAnimation {
+            proxy.scrollTo(messages.count - 1, anchor: .bottom)
+        }
     }
 }
 
@@ -154,3 +181,4 @@ struct ChatView_Previews: PreviewProvider {
         ChatView()
     }
 }
+
