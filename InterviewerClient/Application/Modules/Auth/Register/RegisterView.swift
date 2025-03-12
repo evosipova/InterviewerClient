@@ -3,35 +3,61 @@ import SwiftUI
 struct RegisterView: View {
     var onBack: () -> Void
     var onNext: () -> Void
-    
-    @State private var email: String = ""
-    @State private var password: String = ""
-    
+
+    @ObservedObject var viewModel = RegisterViewModel()
+
     var body: some View {
         VStack(alignment: .leading) {
             CustomNavBar(title: "Регистрация", onBack: onBack)
-            
+
             VStack(spacing: 15) {
-                TextField("Email", text: $email)
+                TextField("Email", text: $viewModel.email)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.2)))
+                    .background(RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.2)))
                     .padding(.horizontal, 20)
-                
-                SecureField("Пароль", text: $password)
+
+                TextField("Имя", text: $viewModel.name)
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.2)))
+                    .background(RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.2)))
                     .padding(.horizontal, 20)
+
+                SecureField("Пароль", text: $viewModel.password)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.2)))
+                    .padding(.horizontal, 20)
+
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 20)
+                }
             }
             .padding(.bottom, 30)
-            
+
             Spacer()
-            
-            Button(action: onNext) {
+
+            Button(action: {
+                viewModel.registerAndLogin { success in
+                    if success {
+                        // Если и регистрация, и логин прошли успешно
+                        onNext()
+                    }
+                }
+            }) {
                 HStack {
-                    Text("Далее")
-                        .font(.headline)
-                        .bold()
-                    Image(systemName: "arrow.right")
+                    if viewModel.isLoading {
+                        ProgressView()
+                    } else {
+                        Text("Далее")
+                            .font(.headline)
+                            .bold()
+                        Image(systemName: "arrow.right")
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -41,6 +67,7 @@ struct RegisterView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
+            .disabled(viewModel.isLoading)
         }
         .navigationBarHidden(true)
     }

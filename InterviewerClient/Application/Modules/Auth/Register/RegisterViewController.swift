@@ -3,16 +3,21 @@ import SwiftUI
 
 class RegisterViewController: UIViewController {
     var coordinator: AppCoordinator?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-        
+
         let registerView = RegisterView(
-            onBack: { [weak self] in self?.coordinator?.goBack() },
-            onNext: { [weak self] in self?.coordinator?.showProfileSetup() }
+            onBack: { [weak self] in
+                self?.coordinator?.goBack()
+            },
+            onNext: { [weak self] in
+                // При успешной регистрации+логине — переходим дальше
+                self?.coordinator?.showProfileSetup()
+            }
         )
-        
+
         let hostingController = UIHostingController(rootView: registerView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
