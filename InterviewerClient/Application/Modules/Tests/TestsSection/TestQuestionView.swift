@@ -9,6 +9,7 @@ struct TestQuestionView: View {
     @State private var correctAnswers = 0
     @State private var incorrectAnswers = 0
     @State private var showResults = false
+    @State private var showHistorySheet = false
     @State private var history: [(question: String, userAnswer: String, correctAnswer: String, explanation: String)] = []
     
     let questions: [Question]
@@ -25,8 +26,11 @@ struct TestQuestionView: View {
                 incorrectAnswers: incorrectAnswers,
                 onRestart: restartTest,
                 onContinue: goToTestsView,
-                onViewHistory: showHistory
+                onViewHistory: { showHistorySheet.toggle() }
             )
+            .sheet(isPresented: $showHistorySheet) {
+                TestHistoryView(history: history)
+            }
         } else {
             VStack {
                 ZStack {
@@ -89,7 +93,10 @@ struct TestQuestionView: View {
         selectedAnswer = answer.text
         
         let question = questions[currentQuestionIndex]
-        history.append((question.questionText, answer.text, question.correctAnswer, question.explanation))
+        if let correctAnswer = question.answers.first(where: { $0.isCorrect })?.text {
+            history.append((question.questionText, answer.text, correctAnswer, question.explanation))
+        }
+        
         if answer.isCorrect {
             correctAnswers += 1
         } else {
@@ -119,10 +126,6 @@ struct TestQuestionView: View {
         presentationMode.wrappedValue.dismiss()
     }
     
-    private func showHistory() {
-        print("Открываем историю ответов") 
-    }
-    
     private func showExitAlert() {
         let alert = UIAlertController(title: "Внимание",
                                       message: "Вы уверены, что хотите выйти? Прогресс будет потерян.",
@@ -138,3 +141,4 @@ struct TestQuestionView: View {
         }
     }
 }
+

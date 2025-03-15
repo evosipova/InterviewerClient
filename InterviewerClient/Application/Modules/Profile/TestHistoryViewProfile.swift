@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct TestHistoryView: View {
+struct TestHistoryViewProfile: View {
     var body: some View {
         VStack {
             HStack {

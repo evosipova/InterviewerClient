@@ -51,7 +51,7 @@ struct ProfileView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 5)
                     .sheet(isPresented: $showHistorySheet) {
-                        TestHistoryView()
+                        TestHistoryViewProfile()
                     }
                     
                     Button(action: { showNotificationsSheet.toggle() }) {
