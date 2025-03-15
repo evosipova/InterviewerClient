@@ -13,7 +13,6 @@ class RegisterViewController: UIViewController {
                 self?.coordinator?.goBack()
             },
             onNext: { [weak self] in
-                // При успешной регистрации+логине — переходим дальше
                 self?.coordinator?.showProfileSetup()
             }
         )

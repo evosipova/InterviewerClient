@@ -7,12 +7,11 @@ class OnboardingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonDisplayMode = .minimal
-        let onboardingView = OnboardingView(onLogin: { [weak self] in
-            self?.coordinator?.showLogin()
-        }, onRegister: { [weak self] in
-            self?.coordinator?.showRegister()
-        })
-        
+        let onboardingView = OnboardingView(
+            onLogin: { [weak self] in self?.coordinator?.showLogin() },
+            onRegister: { [weak self] in self?.coordinator?.showRegister() },
+            onTest: { [weak self] in self?.coordinator?.showTabBar() }
+        )
         let hostingController = UIHostingController(rootView: onboardingView)
         addChild(hostingController)
         view.addSubview(hostingController.view)

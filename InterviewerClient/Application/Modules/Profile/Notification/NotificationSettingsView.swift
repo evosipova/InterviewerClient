@@ -71,7 +71,7 @@ struct NotificationSettingsView: View {
                         }
                     ) : AnyView(EmptyView())
                 )
-                .animation(.easeInOut, value: isNotificationsEnabled) // Анимация появления кнопок
+                .animation(.easeInOut, value: isNotificationsEnabled) 
                 .onAppear { loadNotificationSettings() }
             }
             

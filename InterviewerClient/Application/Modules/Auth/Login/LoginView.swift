@@ -4,7 +4,6 @@ struct LoginView: View {
     var onBack: () -> Void
     var onNext: () -> Void
 
-    // Привязываем ViewModel
     @ObservedObject var viewModel = LoginViewModel()
 
     var body: some View {
@@ -26,7 +25,6 @@ struct LoginView: View {
                         .fill(Color.gray.opacity(0.2)))
                     .padding(.horizontal, 20)
 
-                // Если есть ошибка, покажем
                 if let error = viewModel.errorMessage {
                     Text(error)
                         .foregroundColor(.red)
@@ -40,7 +38,6 @@ struct LoginView: View {
             Button(action: {
                 viewModel.login { success in
                     if success {
-                        // Если всё ок, вызываем onNext()
                         onNext()
                     }
                 }
@@ -62,7 +59,7 @@ struct LoginView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
-            .disabled(viewModel.isLoading) // Блокируем кнопку, пока идёт запрос
+            .disabled(viewModel.isLoading)
         }
         .navigationBarHidden(true)
     }

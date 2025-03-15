@@ -14,7 +14,6 @@ class LoginViewController: UIViewController {
                 self?.coordinator?.goBack()
             },
             onNext: { [weak self] in
-                // Успешный логин → показываем TabBar
                 self?.coordinator?.showTabBar()
             }
         )

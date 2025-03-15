@@ -3,6 +3,7 @@ import SwiftUI
 struct OnboardingView: View {
     var onLogin: () -> Void
     var onRegister: () -> Void
+    var onTest:() -> Void
 
     var body: some View {
         VStack {
@@ -41,6 +42,17 @@ struct OnboardingView: View {
                         .cornerRadius(10)
                         .font(.headline)
                 }
+                
+                
+                Button(action: onTest) {
+                    Text("test")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .font(.headline)
+                }
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
@@ -50,6 +62,6 @@ struct OnboardingView: View {
 
 struct OnboardingView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardingView(onLogin: {}, onRegister: {})
+        OnboardingView(onLogin: {}, onRegister: {}, onTest: {})
     }
 }

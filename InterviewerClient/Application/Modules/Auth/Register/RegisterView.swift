@@ -44,7 +44,6 @@ struct RegisterView: View {
             Button(action: {
                 viewModel.registerAndLogin { success in
                     if success {
-                        // Если и регистрация, и логин прошли успешно
                         onNext()
                     }
                 }

@@ -1,0 +1,50 @@
+[
+    {
+        "id": "q1",
+        "topic": "Основы Swift",
+        "questionText": "Как называется переменная, значение которой нельзя изменить?",
+        "answers": [
+            { "text": "let", "isCorrect": true },
+            { "text": "var", "isCorrect": false },
+            { "text": "const", "isCorrect": false },
+            { "text": "final", "isCorrect": false }
+        ],
+        "explanation": "Переменные, объявленные с помощью `let`, являются константами и не могут изменяться после присвоения значения."
+    },
+    {
+        "id": "q2",
+        "topic": "Основы Swift",
+        "questionText": "Что из этого лишнее на счёт использования `??`?",
+        "answers": [
+            { "text": "Используется для установки значения по умолчанию", "isCorrect": false },
+            { "text": "Обязательно нужно использовать всегда", "isCorrect": true },
+            { "text": "Позволяет избежать `nil`", "isCorrect": false },
+            { "text": "Работает только с Optional", "isCorrect": false }
+        ],
+        "explanation": "Оператор `??` используется для установки значения по умолчанию, но он не является обязательным к использованию во всех случаях."
+    },
+    {
+        "id": "q3",
+        "topic": "Алгоритмы",
+        "questionText": "Какова временная сложность быстрой сортировки в худшем случае?",
+        "answers": [
+            { "text": "O(n log n)", "isCorrect": false },
+            { "text": "O(n²)", "isCorrect": true },
+            { "text": "O(log n)", "isCorrect": false },
+            { "text": "O(n)", "isCorrect": false }
+        ],
+        "explanation": "Быстрая сортировка имеет худший случай `O(n²)`, если опорный элемент выбирается неудачно, например, при уже отсортированном массиве."
+    },
+    {
+        "id": "q4",
+        "topic": "Многопоточность",
+        "questionText": "Какой метод GCD используется для выполнения задачи в глобальной очереди асинхронно?",
+        "answers": [
+            { "text": "DispatchQueue.global().async", "isCorrect": true },
+            { "text": "DispatchQueue.main.async", "isCorrect": false },
+            { "text": "DispatchQueue.global().sync", "isCorrect": false },
+            { "text": "DispatchQueue.concurrent.async", "isCorrect": false }
+        ],
+        "explanation": "`DispatchQueue.global().async` выполняет задачу в глобальной очереди асинхронно, позволяя продолжить выполнение кода без блокировки потока."
+    }
+]
