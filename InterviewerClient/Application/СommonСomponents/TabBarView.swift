@@ -42,6 +42,7 @@ struct TabBarView: View {
                 .tag(4)
                 .environmentObject(coordinator)
         }
+        .background(Color(.systemBackground))
     }
 }
 

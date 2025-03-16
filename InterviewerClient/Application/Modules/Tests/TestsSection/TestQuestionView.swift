@@ -12,83 +12,116 @@ struct TestQuestionView: View {
     @State private var showHistorySheet = false
     @State private var history: [(question: String, userAnswer: String, correctAnswer: String, explanation: String)] = []
     
+    @State private var timeRemaining = 300
+    @State private var timerActive = true
+    @State private var timeTaken = ""
+
     let questions: [Question]
-    
+
     init(topic: String) {
         self.topic = topic
         self.questions = QuestionLoader.loadQuestions(for: topic)
     }
-    
+
     var body: some View {
-        if showResults {
-            TestResultsView(
-                correctAnswers: correctAnswers,
-                incorrectAnswers: incorrectAnswers,
-                onRestart: restartTest,
-                onContinue: goToTestsView,
-                onViewHistory: { showHistorySheet.toggle() }
-            )
-            .sheet(isPresented: $showHistorySheet) {
-                TestHistoryView(history: history)
-            }
-        } else {
-            VStack {
-                ZStack {
+        NavigationStack {
+            VStack(alignment: .leading) {
+                HStack {
+                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .font(.title2)
+                            .foregroundColor(.black)
+                    }
+                    .padding(.leading, 20)
+                    
+                    Spacer()
+
                     Text(topic)
                         .font(.headline)
                         .bold()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    
-                    HStack {
-                        Button(action: { showExitAlert() }) {
-                            Image(systemName: "chevron.left")
-                                .font(.title2)
-                                .foregroundColor(.black)
-                        }
-                        .padding(.leading, 20)
-                        Spacer()
-                    }
+
+                    Spacer()
                 }
                 .frame(height: 44)
                 .padding(.top, 10)
-                
-                VStack {
-                    if currentQuestionIndex < questions.count {
-                        Text(questions[currentQuestionIndex].questionText)
-                            .font(.title3)
-                            .padding()
+
+                VStack(spacing: 5) {
+                    HStack {
+                        Text("Вопрос \(currentQuestionIndex + 1) из \(questions.count)")
+                            .font(.headline)
+                            .bold()
                         
-                        VStack(spacing: 10) {
-                            ForEach(questions[currentQuestionIndex].answers, id: \.text) { answer in
-                                Button(action: {
-                                    handleAnswerSelection(answer)
-                                }) {
-                                    Text(answer.text)
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(selectedAnswer == answer.text
-                                                    ? (answer.isCorrect ? Color.green.opacity(0.8) : Color.red.opacity(0.8))
-                                                    : Color.gray.opacity(0.2))
-                                        .cornerRadius(10)
+                        Spacer()
+                        
+                        Text("\(timeFormatted(timeRemaining))")
+                            .font(.headline)
+                            .bold()
+                            .foregroundColor(timeRemaining > 60 ? .green : .red)
+                    }
+                    .padding(.horizontal)
+
+                    ProgressView(value: Double(timeRemaining) / 300)
+                        .progressViewStyle(LinearProgressViewStyle(tint: timeRemaining > 60 ? .green : .red))
+                        .padding(.horizontal)
+                }
+                .padding(.bottom, 10)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 15) {
+                        if currentQuestionIndex < questions.count {
+                            Text(questions[currentQuestionIndex].questionText)
+                                .font(.title3)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal)
+
+                            VStack(spacing: 10) {
+                                ForEach(questions[currentQuestionIndex].answers, id: \.text) { answer in
+                                    Button(action: {
+                                        handleAnswerSelection(answer)
+                                    }) {
+                                        Text(answer.text)
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(selectedAnswer == answer.text
+                                                        ? (answer.isCorrect ? Color.green.opacity(0.8) : Color.red.opacity(0.8))
+                                                        : Color.gray.opacity(0.2))
+                                            .cornerRadius(10)
+                                    }
                                 }
                             }
+                            .padding(.horizontal, 20)
                         }
-                        .padding(.horizontal, 20)
-                    } else {
-                        Spacer()
-                        Text("Нет доступных вопросов.")
-                            .foregroundColor(.gray)
-                            .font(.title2)
-                        Spacer()
                     }
-                    Spacer()
+                    .padding(.top, 10)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .onAppear {
+                startTimer()
+            }
+            .navigationDestination(isPresented: $showResults) {
+                TestResultsView(
+                    correctAnswers: correctAnswers,
+                    incorrectAnswers: incorrectAnswers,
+                    timeTaken: timeTaken,
+                    onRestart: restartTest,
+                    onContinue: goToTestsView,
+                    onViewHistory: { showHistorySheet.toggle() }
+                )
+                .sheet(isPresented: $showHistorySheet) {
+                    TestHistoryView(
+                        history: history,
+                        correctAnswers: correctAnswers,
+                        incorrectAnswers: incorrectAnswers,
+                        topic: topic,
+                        timeTaken: timeTaken
+                    )
+                }
             }
             .navigationBarHidden(true)
         }
+        .navigationBarHidden(true)
     }
-    
+
     private func handleAnswerSelection(_ answer: Answer) {
         selectedAnswer = answer.text
         
@@ -96,23 +129,46 @@ struct TestQuestionView: View {
         if let correctAnswer = question.answers.first(where: { $0.isCorrect })?.text {
             history.append((question.questionText, answer.text, correctAnswer, question.explanation))
         }
-        
+
         if answer.isCorrect {
             correctAnswers += 1
         } else {
             incorrectAnswers += 1
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if currentQuestionIndex < questions.count - 1 {
                 currentQuestionIndex += 1
                 selectedAnswer = nil
             } else {
-                showResults = true
+                completeTest()
             }
         }
     }
-    
+
+    private func startTimer() {
+        timerActive = true
+        timeRemaining = 300
+        DispatchQueue.global(qos: .background).async {
+            while self.timerActive && self.timeRemaining > 0 {
+                sleep(1)
+                DispatchQueue.main.async {
+                    self.timeRemaining -= 1
+                    if self.timeRemaining == 0 {
+                        self.completeTest()
+                    }
+                }
+            }
+        }
+    }
+
+    private func completeTest() {
+        guard !showResults else { return }
+        timerActive = false
+        timeTaken = timeFormatted(300 - timeRemaining)
+        showResults = true
+    }
+
     private func restartTest() {
         currentQuestionIndex = 0
         correctAnswers = 0
@@ -120,25 +176,23 @@ struct TestQuestionView: View {
         selectedAnswer = nil
         history.removeAll()
         showResults = false
+        timeRemaining = 300
+        startTimer()
     }
-    
+
     private func goToTestsView() {
         presentationMode.wrappedValue.dismiss()
     }
-    
-    private func showExitAlert() {
-        let alert = UIAlertController(title: "Внимание",
-                                      message: "Вы уверены, что хотите выйти? Прогресс будет потерян.",
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Да, выйти", style: .destructive) { _ in
-            presentationMode.wrappedValue.dismiss()
-        })
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootViewController = windowScene.windows.first?.rootViewController {
-            rootViewController.present(alert, animated: true)
-        }
+
+    private func timeFormatted(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let seconds = seconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }
 
+struct TestQuestionView_Previews: PreviewProvider {
+    static var previews: some View {
+        TestQuestionView(topic: "Основы Swift")
+    }
+}
