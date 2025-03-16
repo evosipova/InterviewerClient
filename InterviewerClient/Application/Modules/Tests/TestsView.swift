@@ -9,7 +9,7 @@ struct TestsView: View {
                         NavigationLink(destination: TestTopicsView()) {
                             TestBlockView(title: "Тесты по темам", subtitle: "Проверьте ваши знания", color: .purple, iconName: "books.vertical.fill")
                         }
-                        NavigationLink(destination: Text("Скоростные тесты")) {
+                        NavigationLink(destination: SpeedTestView()) {
                             TestBlockView(title: "Борьба со временем", subtitle: "Ответьте как можно больше", color: .green, iconName: "clock.fill")
                         }
                         NavigationLink(destination: Text("Режим одной ошибки")) {
