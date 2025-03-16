@@ -12,7 +12,7 @@ struct TestsView: View {
                         NavigationLink(destination: SpeedTestView()) {
                             TestBlockView(title: "Борьба со временем", subtitle: "Ответьте как можно больше", color: .green, iconName: "clock.fill")
                         }
-                        NavigationLink(destination: Text("Режим одной ошибки")) {
+                        NavigationLink(destination: OneMistakeTestView()) {
                             TestBlockView(title: "Одна ошибка", subtitle: "И ты ошибся", color: .orange, iconName: "exclamationmark.triangle.fill")
                         }
                     }
