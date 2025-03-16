@@ -1,4 +1,5 @@
 import SwiftUI
+import Kingfisher
 
 struct OnboardingView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -6,20 +7,16 @@ struct OnboardingView: View {
     var onRegister: () -> Void
     var onTest:() -> Void
     
+    let gifURL = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW1hN2dzb25kN3RqMXF3YjV2dTNjc3lvbHUzenZuaWs0OW9kOGJvcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/s99VUdNNp2kzYJDq4B/giphy.gif"
+    
     var body: some View {
         VStack {
             Spacer()
             
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 80, height: 80)
-                .foregroundColor(.black)
+            KFAnimatedImage(URL(string: gifURL))
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 400, height: 400)
                 .padding(.bottom, 20)
-            
-            Text("Привет!")
-                .font(.title)
-                .bold()
-                .padding(.bottom, 30)
             
             Spacer()
             
