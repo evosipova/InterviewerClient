@@ -16,13 +16,12 @@ struct StatisticsView: View {
                         
                         HStack(spacing: 15) {
                             StatisticSmallBlockView(value: "2", description: "Правильных ответов", iconName: "checkmark.circle.fill")
-                            StatisticSmallBlockView(value: "01:08", description: "Общее время обучения", iconName: "clock.fill")
+                            StatisticSmallBlockView(value: "1", description: "Неправильны отвтеов", iconName: "multiply.circle.fill")
                         }
                         HStack(spacing: 15) {
-                            StatisticSmallBlockView(value: "1", description: "Всего попыток", iconName: "doc.fill")
-                            StatisticSmallBlockView(value: "1", description: "Всего тестов", iconName: "chart.pie.fill")
+                            StatisticSmallBlockView(value: "01:08", description: "Общее время обучения", iconName: "clock.fill")
+                            StatisticSmallBlockView(value: "1", description: "Всего тестов", iconName: "doc.fill")
                         }
-                        
                         
                         StatisticsPieChartView()
                             .frame(height: 200)
