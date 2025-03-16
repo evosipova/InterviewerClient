@@ -110,7 +110,7 @@ struct SpeedTestView: View {
                         history: history,
                         correctAnswers: correctAnswers,
                         incorrectAnswers: incorrectAnswers,
-                        topic: "Скоростной тест",
+                        topic: "Борьба со временем",
                         timeTaken: timeTaken
                     )
                 }

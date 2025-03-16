@@ -6,12 +6,14 @@ struct OneMistakeTestView: View {
     @State private var currentQuestionIndex = 0
     @State private var selectedAnswer: String? = nil
     @State private var correctAnswers = 0
+    @State private var incorrectAnswers = 0
     @State private var showResults = false
     @State private var history: [(question: String, userAnswer: String, correctAnswer: String, explanation: String)] = []
     
     @State private var timeRemaining = 3600
     @State private var timerActive = true
     @State private var timeTaken = ""
+    @State private var showHistorySheet = false
     
     let questions: [Question]
 
@@ -97,12 +99,22 @@ struct OneMistakeTestView: View {
             .navigationDestination(isPresented: $showResults) {
                 TestResultsView(
                     correctAnswers: correctAnswers,
-                    incorrectAnswers: 1, 
+                    incorrectAnswers: 1,
                     timeTaken: timeTaken,
                     onRestart: restartTest,
                     onContinue: goToTestsView,
-                    onViewHistory: {}
+                    onViewHistory: { showHistorySheet.toggle() }
                 )
+                .sheet(isPresented: $showHistorySheet) {
+                    TestHistoryView(
+                        history: history,
+                        correctAnswers: correctAnswers,
+                        incorrectAnswers: incorrectAnswers,
+                        topic: "Одна ошибка",
+                        timeTaken: timeTaken
+                    )
+                }
+                
             }
             .navigationBarHidden(true)
         }
