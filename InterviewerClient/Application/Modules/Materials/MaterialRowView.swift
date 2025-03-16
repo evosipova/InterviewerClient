@@ -39,7 +39,7 @@ struct MaterialRowView: View {
 
 struct MaterialRowView_Previews: PreviewProvider {
     static var previews: some View {
-        MaterialRowView(item: .init(id: 1, title: "1", subtitle: "1", isLiked: true), onTap: {}, onLikeToggle: {})
+        MaterialRowView(item: .init(id: 1, title: "1", subtitle: "1", isLiked: true, level: "junior", content: ""), onTap: {}, onLikeToggle: {})
     }
 }
 

@@ -20,7 +20,6 @@ struct MaterialScrollDetailView: View {
                                 .foregroundColor(.black)
                         }
                         .padding(.leading, 20)
-
                         Spacer()
                     }
                 }
@@ -34,8 +33,9 @@ struct MaterialScrollDetailView: View {
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 20)
 
-                        Text("Здесь может быть подробное описание...")
+                        Text(item.content) 
                             .padding(.horizontal, 20)
+                            .font(.body)
 
                         Spacer()
                     }
@@ -49,7 +49,14 @@ struct MaterialScrollDetailView: View {
 struct MaterialScrollDetailView_Previews: PreviewProvider {
     static var previews: some View {
         MaterialScrollDetailView(
-            item: MaterialItem(id: 1, title: "Тема", subtitle: "Описание", isLiked: false),
+            item: MaterialItem(
+                id: 1,
+                title: "Тема",
+                subtitle: "Описание",
+                isLiked: false,
+                level: "junior",
+                content: "Пример учебного материала, который загружается из JSON"
+            ),
             onBack: {}
         )
     }

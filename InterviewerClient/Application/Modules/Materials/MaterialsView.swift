@@ -1,26 +1,32 @@
 import SwiftUI
 
+struct MaterialItem: Identifiable, Hashable, Codable {
+    let id: Int
+    var title: String
+    var subtitle: String
+    var isLiked: Bool
+    var level: String
+    var content: String
+}
+
+struct MaterialsResponse: Codable {
+    let materials: [MaterialItem]
+}
+
 struct MaterialsView: View {
     @State private var searchText: String = ""
     @State private var showLikedSheet = false
     @State private var showDetail = false
     @State private var selectedItem: MaterialItem?
     
-    @State private var courses: [MaterialItem] = [
-        MaterialItem(id: 1, title: "Тема 1", subtitle: "Название курса 1", isLiked: false),
-        MaterialItem(id: 2, title: "Тема 2", subtitle: "Название курса 2", isLiked: true),
-        MaterialItem(id: 3, title: "Тема 3", subtitle: "Название курса 3", isLiked: false),
-    ]
-    
-    @State private var materials: [MaterialItem] = [
-        MaterialItem(id: 101, title: "Материал 1", subtitle: "Описание 1", isLiked: false),
-        MaterialItem(id: 102, title: "Материал 2", subtitle: "Описание 2", isLiked: false)
-    ]
+    @State private var recommendedMaterials: [MaterialItem] = []
+    @State private var allMaterials: [MaterialItem] = []
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 15) {
+                    
                     HStack(spacing: 10) {
                         TextField("Поиск", text: $searchText)
                             .padding(10)
@@ -40,31 +46,24 @@ struct MaterialsView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 10)
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Курсы")
-                            .font(.headline)
-                            .bold()
-                            .padding(.horizontal, 20)
-                        
-                        if filteredCourses.isEmpty {
-                            HStack {
-                                Spacer()
-                                Text("Ничего не найдено")
-                                    .foregroundColor(.gray)
-                                Spacer()
-                            }
-                            .padding(.horizontal, 20)
-                        } else {
-                            ForEach(filteredCourses) { course in
+                    
+                    if !recommendedMaterials.isEmpty {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Рекомендации")
+                                .font(.headline)
+                                .bold()
+                                .padding(.horizontal, 20)
+                                .padding(.top, 10)
+                            
+                            ForEach(filteredRecommendations) { material in
                                 MaterialRowView(
-                                    item: course,
+                                    item: material,
                                     onTap: {
-                                        selectedItem = course
+                                        selectedItem = material
                                         showDetail = true
                                     },
                                     onLikeToggle: {
-                                        toggleLike(item: course, in: &courses)
+                                        toggleLike(item: material, in: &recommendedMaterials)
                                     }
                                 )
                                 .padding(.horizontal, 20)
@@ -77,7 +76,6 @@ struct MaterialsView: View {
                             .font(.headline)
                             .bold()
                             .padding(.horizontal, 20)
-                            .padding(.top, 10)
                         
                         if filteredMaterials.isEmpty {
                             HStack {
@@ -88,15 +86,15 @@ struct MaterialsView: View {
                             }
                             .padding(.horizontal, 20)
                         } else {
-                            ForEach(filteredMaterials) { mat in
+                            ForEach(filteredMaterials) { material in
                                 MaterialRowView(
-                                    item: mat,
+                                    item: material,
                                     onTap: {
-                                        selectedItem = mat
+                                        selectedItem = material
                                         showDetail = true
                                     },
                                     onLikeToggle: {
-                                        toggleLike(item: mat, in: &materials)
+                                        toggleLike(item: material, in: &allMaterials)
                                     }
                                 )
                                 .padding(.horizontal, 20)
@@ -106,18 +104,16 @@ struct MaterialsView: View {
                 }
             }
             .navigationBarTitle("Материалы", displayMode: .large)
-
+            .onAppear {
+                loadMaterials()
+            }
             .sheet(isPresented: $showLikedSheet) {
-                let likedCourses = courses.filter { $0.isLiked }
-                let likedMaterials = materials.filter { $0.isLiked }
+                let likedMaterials = allMaterials.filter { $0.isLiked }
                 LikedMaterialsSheetView(
-                    likedItems: likedCourses + likedMaterials,
+                    likedItems: likedMaterials,
                     onToggleLike: { item in
-                        if let i = courses.firstIndex(where: { $0.id == item.id }) {
-                            courses[i].isLiked.toggle()
-                        }
-                        if let i = materials.firstIndex(where: { $0.id == item.id }) {
-                            materials[i].isLiked.toggle()
+                        if let i = allMaterials.firstIndex(where: { $0.id == item.id }) {
+                            allMaterials[i].isLiked.toggle()
                         }
                     }
                 )
@@ -125,16 +121,17 @@ struct MaterialsView: View {
             .fullScreenCover(item: $selectedItem) { item in
                 MaterialScrollDetailView(item: item, onBack: { selectedItem = nil })
             }
-
         }
     }
     
-    private var filteredCourses: [MaterialItem] {
-        filterItems(searchText: searchText, in: courses)
+    private var filteredRecommendations: [MaterialItem] {
+        filterItems(searchText: searchText, in: recommendedMaterials)
     }
+    
     private var filteredMaterials: [MaterialItem] {
-        filterItems(searchText: searchText, in: materials)
+        filterItems(searchText: searchText, in: allMaterials)
     }
+    
     private func filterItems(searchText: String, in array: [MaterialItem]) -> [MaterialItem] {
         if searchText.isEmpty { return array }
         let lower = searchText.lowercased()
@@ -146,4 +143,18 @@ struct MaterialsView: View {
             array[index].isLiked.toggle()
         }
     }
+    
+    private func loadMaterials() {
+        guard let url = Bundle.main.url(forResource: "materials", withExtension: "json") else {
+            return
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            let decodedData = try JSONDecoder().decode(MaterialsResponse.self, from: data)
+            
+            self.recommendedMaterials = decodedData.materials.filter { $0.level.lowercased() == "junior" }
+            self.allMaterials = decodedData.materials.filter { $0.level.lowercased() != "junior" }
+        } catch {}
+    }
 }
+
