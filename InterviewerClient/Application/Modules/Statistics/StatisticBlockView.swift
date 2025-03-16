@@ -11,11 +11,12 @@ struct StatisticBlockView: View {
                 Text(title)
                     .font(.title2)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary.opacity(0.8))
                 
                 Text(subtitle)
                     .font(.footnote)
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.primary.opacity(0.8))
+                
             }
             
             Spacer()
@@ -24,7 +25,7 @@ struct StatisticBlockView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 30, height: 30)
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(.primary.opacity(0.8))
         }
         .padding()
         .frame(maxWidth: .infinity, minHeight: 80)

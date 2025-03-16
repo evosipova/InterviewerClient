@@ -10,7 +10,7 @@ struct StatisticsView: View {
                         StatisticBlockView(title: "Показать ранг", subtitle: "Проходите больше тестов", iconName: "triangle.fill")
                         
                         Text("Ваши знания растут")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundColor(.gray)
                             .padding(.top, 5)
                         

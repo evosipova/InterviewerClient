@@ -20,6 +20,7 @@ struct AddNotificationPopup: View {
                     .bold()
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
+                    .foregroundColor(.black)
                 
                 Button(action: { onClose() }) {
                     Image(systemName: "xmark")
@@ -34,9 +35,11 @@ struct AddNotificationPopup: View {
             
             HStack {
                 Text("Время")
+                    .foregroundColor(.black)
                 Spacer()
                 DatePicker("", selection: $selectedTime, displayedComponents: .hourAndMinute)
                     .labelsHidden()
+                    .colorInvert()
             }
             .padding()
             .frame(maxWidth: .infinity)
@@ -44,8 +47,8 @@ struct AddNotificationPopup: View {
             .cornerRadius(10)
             
             VStack(alignment: .leading, spacing: 10) {
-                Text("Дни")
-                    .font(.headline)
+                Text("Выбери дни недели")
+                    .foregroundColor(.black)
                 
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 7), spacing: 10) {
                     ForEach(allDays, id: \.self) { day in

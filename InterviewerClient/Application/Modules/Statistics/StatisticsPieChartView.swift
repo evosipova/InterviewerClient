@@ -14,7 +14,7 @@ struct StatisticsPieChartView: View {
             
             Text("Всего тестов\n1")
                 .font(.headline)
-                .foregroundColor(.white)
+                .foregroundColor(.primary)
                 .multilineTextAlignment(.center)
         }
         .frame(width: 150, height: 150)

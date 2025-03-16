@@ -17,7 +17,7 @@ struct MaterialScrollDetailView: View {
                         Button(action: onBack) {
                             Image(systemName: "chevron.left")
                                 .font(.title2)
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                         }
                         .padding(.leading, 20)
                         Spacer()

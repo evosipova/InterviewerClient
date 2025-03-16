@@ -30,7 +30,7 @@ struct TestQuestionView: View {
                     Button(action: { presentationMode.wrappedValue.dismiss() }) {
                         Image(systemName: "chevron.left")
                             .font(.title2)
-                            .foregroundColor(.black)
+                            .foregroundColor(.primary)
                     }
                     .padding(.leading, 20)
                     

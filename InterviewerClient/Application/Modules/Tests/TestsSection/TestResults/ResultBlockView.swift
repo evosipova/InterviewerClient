@@ -14,7 +14,7 @@ struct ResultBlockView: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(Color.black.opacity(0.1))
+        .background(Color.primary.opacity(0.1))
         .cornerRadius(10)
     }
 }

@@ -40,9 +40,12 @@ struct ProfileView: View {
                     Button(action: { showHistorySheet.toggle() }) {
                         HStack {
                             Image(systemName: "clock.fill")
+                                .foregroundColor(.primary)
                             Text("История тестов")
+                                .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
+                                .foregroundColor(.primary)
                         }
                         .padding()
                         .background(Color.gray.opacity(0.2))
@@ -57,9 +60,12 @@ struct ProfileView: View {
                     Button(action: { showNotificationsSheet.toggle() }) {
                         HStack {
                             Image(systemName: "bell.fill")
+                                .foregroundColor(.primary)
                             Text("Уведомления")
+                                .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
+                                .foregroundColor(.primary)
                         }
                         .padding()
                         .background(Color.gray.opacity(0.2))
@@ -73,6 +79,7 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Тема оформления")
                             .font(.headline)
+                            .foregroundColor(.primary)
                         
                         HStack {
                             ForEach(themes, id: \.self) { theme in
@@ -83,16 +90,18 @@ struct ProfileView: View {
                                     VStack {
                                         Image(systemName: theme == "Системная" ? "sun.max.fill" : (theme == "Светлая" ? "sun.max" : "moon.fill"))
                                             .font(.largeTitle)
+                                            .foregroundColor(.primary)
                                         Text(theme)
                                             .font(.footnote)
                                             .bold()
                                             .fixedSize(horizontal: true, vertical: false)
                                             .minimumScaleFactor(0.8)
                                             .lineLimit(1)
+                                            .foregroundColor(.primary)
                                     }
                                     .frame(maxWidth: .infinity, minHeight: 70, maxHeight: 70)
                                     .padding()
-                                    .background(selectedTheme == theme ? Color.pink.opacity(0.3) : Color.gray.opacity(0.2))
+                                    .background(selectedTheme == theme ? Color.blue.opacity(0.3) : Color.gray.opacity(0.2))
                                     .cornerRadius(10)
                                 }
                             }
@@ -108,7 +117,7 @@ struct ProfileView: View {
                     }) {
                         Text("Выйти")
                             .font(.headline)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.primary)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.gray.opacity(0.2))

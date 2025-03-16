@@ -17,15 +17,16 @@ struct MaterialRowView: View {
             VStack(alignment: .leading) {
                 Text(item.title)
                     .font(.subheadline)
+                    .foregroundColor(.black)
                     .bold()
                 Text(item.subtitle)
                     .font(.footnote)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.black)
             }
             Spacer()
             
             Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
+                .foregroundColor(.black)
         }
         .padding()
         .background(Color.white)
@@ -39,7 +40,18 @@ struct MaterialRowView: View {
 
 struct MaterialRowView_Previews: PreviewProvider {
     static var previews: some View {
-        MaterialRowView(item: .init(id: 1, title: "1", subtitle: "1", isLiked: true, level: "junior", content: ""), onTap: {}, onLikeToggle: {})
+        MaterialRowView(
+            item: .init(
+                id: 1,
+                title: "Название",
+                subtitle: "1",
+                isLiked: true,
+                level: "Описание",
+                content: ""
+            ),
+            onTap: {
+            },
+            onLikeToggle: {})
     }
 }
 
