@@ -19,12 +19,6 @@ struct RegisterView: View {
                         .fill(Color.gray.opacity(0.2)))
                     .padding(.horizontal, 20)
 
-                TextField("Имя", text: $viewModel.name)
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.2)))
-                    .padding(.horizontal, 20)
-
                 SecureField("Пароль", text: $viewModel.password)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 10)

@@ -1,40 +1,53 @@
 import SwiftUI
+import PhotosUI
 
 struct ProfileSetupView: View {
     var onBack: () -> Void
     var onComplete: () -> Void
     
     @State private var fullName: String = ""
-    @State private var birthdate = Date()
-    @State private var selectedGender = "Мужской"
-    let genders = ["Мужской", "Женский", "Другой"]
+    @State private var selectedImage: UIImage? = nil
+    @State private var isImagePickerPresented = false
     
     var body: some View {
         VStack(alignment: .leading) {
             CustomNavBar(title: "Заполните данные", onBack: onBack)
             
-            VStack(spacing: 15) {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack {
+                    if let image = selectedImage {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.gray.opacity(0.5), lineWidth: 2)
+                            )
+                    } else {
+                        ZStack {
+                            Circle()
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(width: 100, height: 100)
+                            
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                
+                Text("Как к вам обращаться?")
+                    .font(.title3)
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 20)
+                
                 TextField("ФИО", text: $fullName)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.2)))
                     .padding(.horizontal, 20)
-                
-                HStack {
-                    Text("Дата рождения")
-                        .font(.title3)
-                    Spacer()
-                    DatePicker("", selection: $birthdate, displayedComponents: .date)
-                        .labelsHidden()
-                }
-                .padding(.horizontal, 20)
-                
-                Picker("Выберите пол", selection: $selectedGender) {
-                    ForEach(genders, id: \.self) { gender in
-                        Text(gender)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal, 20)
             }
             .padding(.bottom, 30)
             
@@ -56,7 +69,10 @@ struct ProfileSetupView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
         }
-        .navigationBarHidden(true) 
+        .sheet(isPresented: $isImagePickerPresented) {
+            ImagePicker(image: $selectedImage)
+        }
+        .navigationBarHidden(true)
     }
 }
 
