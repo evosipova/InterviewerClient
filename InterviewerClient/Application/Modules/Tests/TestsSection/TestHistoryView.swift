@@ -38,6 +38,7 @@ struct TestHistoryView: View {
                             .foregroundColor(.gray)
                     }
                     .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.black.opacity(0.1))
                     .cornerRadius(12)
                     
@@ -58,6 +59,7 @@ struct TestHistoryView: View {
                             
                             Text(entry.userAnswer)
                                 .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .background(entry.userAnswer == entry.correctAnswer ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
                                 .cornerRadius(8)
                             
@@ -68,6 +70,7 @@ struct TestHistoryView: View {
                             
                             Text(entry.correctAnswer)
                                 .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .background(Color.green.opacity(0.2))
                                 .cornerRadius(8)
                             
@@ -77,10 +80,12 @@ struct TestHistoryView: View {
                             
                             Text(entry.explanation)
                                 .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .background(Color.gray.opacity(0.2))
                                 .cornerRadius(8)
                         }
-                        .padding(12)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading) 
                         .background(Color.black.opacity(0.1))
                         .cornerRadius(12)
                     }
