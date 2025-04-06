@@ -127,14 +127,26 @@ struct NotificationSettingsView: View {
             content.title = "Interviewer 📢"
             content.body = notificationMessages.randomElement() ?? "Время для тренировки!"
             content.sound = .default
-            
+
             var dateComponents = Calendar.current.dateComponents([.hour, .minute], from: notification.time)
             dateComponents.weekday = dayToNumber(day)
-            
+
             let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            _ = UNNotificationRequest(identifier: "reminder_\(day)_\(notification.id)", content: content, trigger: trigger)
+
+            let request = UNNotificationRequest(
+                identifier: "reminder_\(day)_\(notification.id)",
+                content: content,
+                trigger: trigger
+            )
+
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error = error {
+                    print("Ошибка при добавлении уведомления: \(error)")
+                }
+            }
         }
     }
+
     
     private func removeScheduledNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()

@@ -10,7 +10,9 @@ struct ProfileView: View {
     @State private var selectedGender = "Не указывать"
     @State private var knowledgeLevel = "Средний"
     @State private var showHistorySheet = false
-    @State private var showNotificationsSheet = false  
+    @State private var showNotificationsSheet = false
+    
+    @State private var profileImage: UIImage?
     
     let themes = ["Системная", "Светлая", "Тёмная"]
     
@@ -19,17 +21,31 @@ struct ProfileView: View {
             ScrollView {
                 VStack(spacing: 8) {
                     VStack {
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .frame(width: 80, height: 80)
-                            .foregroundColor(.blue)
-                            .padding(.top, 10)
+                        if let image = profileImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.blue, lineWidth: 2))
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .foregroundColor(.blue)
+                        }
                         
                         HStack {
                             Text(fullName)
                                 .font(.title2)
                                 .bold()
-                            NavigationLink(destination: EditProfileView(fullName: $fullName, birthdate: $birthdate, selectedGender: $selectedGender, knowledgeLevel: $knowledgeLevel)) {
+                            NavigationLink(
+                                destination: EditProfileView(
+                                    fullName: $fullName,
+                                    knowledgeLevel: $knowledgeLevel,
+                                    profileImage: $profileImage
+                                )
+                            ) {
                                 Image(systemName: "pencil")
                                     .foregroundColor(.gray)
                             }

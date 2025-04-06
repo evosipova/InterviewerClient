@@ -1,16 +1,27 @@
 import SwiftUI
+import PhotosUI
 
 struct EditProfileView: View {
     @Environment(\.presentationMode) var presentationMode
-
+    
     @Binding var fullName: String
-    @Binding var birthdate: Date
-    @Binding var selectedGender: String
     @Binding var knowledgeLevel: String
-
-    let genders = ["Мужской", "Женский", "Не указывать"]
-    let knowledgeLevels = ["Новичок", "Средний", "Продвинутый"]
-
+    @Binding var profileImage: UIImage?
+    
+    let knowledgeLevels = ["Junior", "Middle", "Senior"]
+    
+    @State private var tempFullName: String
+    @State private var tempImage: UIImage?
+    @State private var isImagePickerPresented = false
+    
+    init(fullName: Binding<String>, knowledgeLevel: Binding<String>, profileImage: Binding<UIImage?>) {
+        _fullName = fullName
+        _knowledgeLevel = knowledgeLevel
+        _profileImage = profileImage
+        _tempFullName = State(initialValue: fullName.wrappedValue)
+        _tempImage = State(initialValue: profileImage.wrappedValue)
+    }
+    
     var body: some View {
         VStack {
             ZStack {
@@ -18,25 +29,29 @@ struct EditProfileView: View {
                     .font(.headline)
                     .bold()
                     .frame(maxWidth: .infinity, alignment: .center)
-
+                
                 HStack {
-                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
                         Image(systemName: "chevron.left")
                             .font(.title2)
-                            .foregroundColor(.black)
+                            .foregroundColor(.primary)
                     }
                     .padding(.leading, 20)
-
+                    
                     Spacer()
-
+                    
                     Button(action: {
+                        fullName = tempFullName
+                        profileImage = tempImage
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "checkmark")
                             .font(.title2)
                             .frame(width: 30, height: 30)
-                            .background(Color.black.opacity(0.1))
-                            .foregroundColor(.black)
+                            .background(Color.primary.opacity(0.1))
+                            .foregroundColor(.primary)
                             .cornerRadius(8)
                     }
                     .padding(.trailing, 20)
@@ -44,22 +59,41 @@ struct EditProfileView: View {
             }
             .frame(height: 44)
             .padding(.top, 10)
-
+            
             ScrollView {
                 VStack(spacing: 15) {
-                    TextField("ФИО", text: $fullName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal, 20)
-
-                    Picker("Пол", selection: $selectedGender) {
-                        ForEach(genders, id: \.self) { Text($0) }
+                    Button(action: {
+                        DispatchQueue.main.async {
+                            isImagePickerPresented.toggle()
+                        }
+                    }) {
+                        if let image = tempImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.gray, lineWidth: 2))
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .foregroundColor(.blue)
+                        }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding(.horizontal, 20)
-
-                    DatePicker("Дата рождения", selection: $birthdate, displayedComponents: .date)
+                    .padding(.bottom, 15)
+                    .sheet(isPresented: $isImagePickerPresented) {
+                        ImagePicker(image: $tempImage)
+                    }
+                    
+                    TextField("ФИО", text: $tempFullName)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.gray.opacity(0.2)))
                         .padding(.horizontal, 20)
-
+                    
                     Picker("Уровень знаний", selection: $knowledgeLevel) {
                         ForEach(knowledgeLevels, id: \.self) { Text($0) }
                     }
@@ -68,7 +102,7 @@ struct EditProfileView: View {
                 }
                 .padding(.top, 20)
             }
-
+            
             Spacer()
         }
         .navigationBarHidden(true)
@@ -78,10 +112,9 @@ struct EditProfileView: View {
 struct EditProfileView_Previews: PreviewProvider {
     static var previews: some View {
         EditProfileView(
-            fullName: .constant("annaliza2011"),
-            birthdate: .constant(Date()),
-            selectedGender: .constant("Не указывать"),
-            knowledgeLevel: .constant("Средний")
+            fullName: .constant("Лиза"),
+            knowledgeLevel: .constant("Средний"),
+            profileImage: .constant(nil)
         )
     }
 }
