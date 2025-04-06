@@ -13,28 +13,43 @@ struct ChatView: View {
     @State private var gptMessages: [OpenAIChatMessage] = [
         OpenAIChatMessage(role: "system", content: "Ты ios-разработчик, задавай вопросы по swift")
     ]
-    
+
+    @State private var hasStartedChat = false
+
     var body: some View {
         NavigationView {
             VStack {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 10) {
-                            ForEach(messages.indices, id: \.self) { index in
-                                ChatBubble(message: messages[index], isUser: !messages[index].hasPrefix("🤖"))
-                                    .id(index)
+                VStack {
+                    if messages.isEmpty && !hasStartedChat {
+                        Spacer()
+                        Text("Чем я могу вам помочь?")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                        Spacer()
+                    } else {
+                        ScrollViewReader { proxy in
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    ForEach(messages.indices, id: \.self) { index in
+                                        ChatBubble(message: messages[index], isUser: !messages[index].hasPrefix("🤖"))
+                                            .id(index)
+                                    }
+                                }
+                                .padding()
+                                .onChange(of: messages) {
+                                    scrollToBottom(proxy)
+                                }
+                                .onChange(of: textFieldHeight) {
+                                    scrollToBottom(proxy)
+                                }
                             }
-                        }
-                        .padding()
-                        .onChange(of: messages) {
-                            scrollToBottom(proxy)
-                        }
-                        .onChange(of: textFieldHeight) {
-                            scrollToBottom(proxy)
                         }
                     }
                 }
-                
+
+
                 HStack(alignment: .bottom, spacing: 10) {
                     ZStack(alignment: .leading) {
                         if messageText.isEmpty {
@@ -94,31 +109,34 @@ struct ChatView: View {
     
     private func sendMessage() {
         guard !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        
+
         let userMessage = "🧑‍💻 " + messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+
         if currentChatIndex == nil {
-            createNewChat()
+            chatHistory.append([])
+            currentChatIndex = chatHistory.count - 1
         }
-        
+
+        hasStartedChat = true
+
         messages.append(userMessage)
         gptMessages.append(OpenAIChatMessage(role: "user", content: messageText))
         saveChatHistory()
-        
-        _ = messageText
+
         messageText = ""
         textFieldHeight = 40
-        
+
         Task {
             do {
                 let gptReply = try await openAI.sendMessageToGPT(messages: gptMessages)
                 let trimmedReply = gptReply.trimmingCharacters(in: .whitespacesAndNewlines)
-                
+
                 let response = "🤖 " + trimmedReply
                 messages.append(response)
-                
+
                 gptMessages.append(OpenAIChatMessage(role: "assistant", content: trimmedReply))
                 saveChatHistory()
-                
+
             } catch {
                 messages.append("🤖 Ошибка при получении ответа.")
                 saveChatHistory()
@@ -127,9 +145,16 @@ struct ChatView: View {
     }
     
     private func createNewChat() {
-        chatHistory.append([])
-        currentChatIndex = chatHistory.count - 1
+        if let index = currentChatIndex, !messages.isEmpty {
+            chatHistory[index] = messages
+        }
+
         messages = []
+        gptMessages = [
+            OpenAIChatMessage(role: "system", content: "Ты ios-разработчик, задавай вопросы по swift")
+        ]
+        currentChatIndex = nil
+        hasStartedChat = false
     }
     
     private func loadChat(index: Int) {

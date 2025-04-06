@@ -12,9 +12,9 @@ struct ChatHistoryView: View {
                 if chats.isEmpty {
                     Text("Нет сохранённых чатов")
                         .foregroundColor(.gray)
-                        .font(.subheadline)
+                        .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 20)
+                        .padding(.top, -50)
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 10) {

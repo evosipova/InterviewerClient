@@ -15,6 +15,9 @@ struct SpeedTestView: View {
     @State private var timeTaken = ""
     @State private var showHistorySheet = false
 
+    @State private var selectedEntry: TestHistoryEntry? = nil
+    @State private var lastEntry: TestHistoryEntry? = nil
+
     let questions: [Question]
 
     init() {
@@ -103,15 +106,19 @@ struct SpeedTestView: View {
                     timeTaken: timeTaken,
                     onRestart: restartTest,
                     onContinue: goToTestsView,
-                    onViewHistory: { showHistorySheet.toggle() }
+                    onViewHistory: {
+                        if let entry = lastEntry {
+                            selectedEntry = entry
+                        }
+                    }
                 )
-                .sheet(isPresented: $showHistorySheet) {
+                .sheet(item: $selectedEntry) { item in
                     TestHistoryView(
-                        history: history,
-                        correctAnswers: correctAnswers,
-                        incorrectAnswers: incorrectAnswers,
-                        topic: "Борьба со временем",
-                        timeTaken: timeTaken
+                        history: item.answers,
+                        correctAnswers: item.correctAnswers,
+                        incorrectAnswers: item.incorrectAnswers,
+                        topic: item.topic,
+                        timeTaken: item.timeTaken
                     )
                 }
             }
@@ -165,6 +172,32 @@ struct SpeedTestView: View {
         timerActive = false
         timeTaken = timeFormatted(120 - timeRemaining)
         showResults = true
+
+        let durationInSeconds = 120 - timeRemaining
+        let session = TestSession(
+            correctAnswers: correctAnswers,
+            incorrectAnswers: incorrectAnswers,
+            duration: durationInSeconds
+        )
+        TestStatisticsStorage.shared.saveSession(session)
+
+        let structuredAnswers = history.map {
+            TestHistoryAnswer(
+                question: $0.question,
+                userAnswer: $0.userAnswer,
+                correctAnswer: $0.correctAnswer,
+                explanation: $0.explanation
+            )
+        }
+        let entry = TestHistoryEntry(
+            topic: "Борьба со временем",
+            answers: structuredAnswers,
+            correctAnswers: correctAnswers,
+            incorrectAnswers: incorrectAnswers,
+            timeTaken: timeTaken
+        )
+        lastEntry = entry
+        TestHistoryStorage.shared.save(entry: entry)
     }
 
     private func restartTest() {
