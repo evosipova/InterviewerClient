@@ -17,6 +17,7 @@ struct OneMistakeTestView: View {
 
     @State private var selectedEntry: TestHistoryEntry? = nil
     @State private var lastEntry: TestHistoryEntry? = nil
+    @State private var isAnswerSelected = false
 
     let questions: [Question]
 
@@ -128,6 +129,8 @@ struct OneMistakeTestView: View {
     }
 
     private func handleAnswerSelection(_ answer: Answer) {
+        guard !isAnswerSelected else { return }
+        isAnswerSelected = true
         selectedAnswer = answer.text
         
         let question = questions[currentQuestionIndex]
@@ -137,17 +140,23 @@ struct OneMistakeTestView: View {
 
         if answer.isCorrect {
             correctAnswers += 1
-            nextQuestion()
+            nextQuestionOrFinish()
         } else {
-            completeTest()
+            incorrectAnswers += 1
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                completeTest()
+            }
         }
     }
 
-    private func nextQuestion() {
+    private func nextQuestionOrFinish() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if currentQuestionIndex < questions.count - 1 {
                 currentQuestionIndex += 1
                 selectedAnswer = nil
+                isAnswerSelected = false
+            } else {
+                completeTest()
             }
         }
     }
@@ -204,10 +213,12 @@ struct OneMistakeTestView: View {
     private func restartTest() {
         currentQuestionIndex = 0
         correctAnswers = 0
+        incorrectAnswers = 0 
         selectedAnswer = nil
         history.removeAll()
         showResults = false
         timeRemaining = 3600
+        isAnswerSelected = false 
         startTimer()
     }
 

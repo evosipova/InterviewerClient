@@ -17,6 +17,7 @@ struct SpeedTestView: View {
 
     @State private var selectedEntry: TestHistoryEntry? = nil
     @State private var lastEntry: TestHistoryEntry? = nil
+    @State private var isAnswerSelected = false
 
     let questions: [Question]
 
@@ -128,6 +129,8 @@ struct SpeedTestView: View {
     }
 
     private func handleAnswerSelection(_ answer: Answer) {
+        guard !isAnswerSelected else { return }
+        isAnswerSelected = true
         selectedAnswer = answer.text
         
         let question = questions[currentQuestionIndex]
@@ -145,6 +148,7 @@ struct SpeedTestView: View {
             if currentQuestionIndex < questions.count - 1 {
                 currentQuestionIndex += 1
                 selectedAnswer = nil
+                isAnswerSelected = false
             } else {
                 completeTest()
             }
@@ -208,6 +212,7 @@ struct SpeedTestView: View {
         history.removeAll()
         showResults = false
         timeRemaining = 120
+        isAnswerSelected = false 
         startTimer()
     }
 
