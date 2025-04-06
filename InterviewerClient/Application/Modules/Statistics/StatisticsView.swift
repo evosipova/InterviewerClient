@@ -1,6 +1,27 @@
 import SwiftUI
 
 struct StatisticsView: View {
+    @State private var sessions: [TestSession] = []
+
+    var totalCorrect: Int {
+        sessions.reduce(0) { $0 + $1.correctAnswers }
+    }
+    var totalIncorrect: Int {
+        sessions.reduce(0) { $0 + $1.incorrectAnswers }
+    }
+    var totalTime: Int {
+        sessions.reduce(0) { $0 + $1.duration }
+    }
+    var totalTests: Int {
+        sessions.count
+    }
+    var longestTest: Int {
+        sessions.map { $0.duration }.max() ?? 0
+    }
+    var shortestTest: Int {
+        sessions.map { $0.duration }.min() ?? 0
+    }
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -13,24 +34,25 @@ struct StatisticsView: View {
                             .font(.subheadline)
                             .foregroundColor(.gray)
                             .padding(.top, 5)
-                        
+
                         HStack(spacing: 15) {
-                            StatisticSmallBlockView(value: "2", description: "Правильных ответов", iconName: "checkmark.circle.fill")
-                            StatisticSmallBlockView(value: "1", description: "Неправильны отвтеов", iconName: "multiply.circle.fill")
+                            StatisticSmallBlockView(value: "\(totalCorrect)", description: "Правильных ответов", iconName: "checkmark.circle.fill")
+                            StatisticSmallBlockView(value: "\(totalIncorrect)", description: "Неправильных ответов", iconName: "multiply.circle.fill")
                         }
                         HStack(spacing: 15) {
-                            StatisticSmallBlockView(value: "01:08", description: "Общее время обучения", iconName: "clock.fill")
-                            StatisticSmallBlockView(value: "1", description: "Всего тестов", iconName: "doc.fill")
+                            StatisticSmallBlockView(value: formatTime(totalTime), description: "Общее время обучения", iconName: "clock.fill")
+                            StatisticSmallBlockView(value: "\(totalTests)", description: "Всего тестов", iconName: "doc.fill")
                         }
-                        
-                        StatisticsPieChartView()
-                            .frame(height: 200)
-                            .padding(.top, 20)
-                        
+
+//                        StatisticsPieChartView()
+//                            .frame(height: 200)
+//                            .padding(.top, 20)
+
                         HStack(spacing: 15) {
-                            StatisticSmallBlockView(value: "01:08", description: "Самый долгий тест", iconName: "tortoise.fill")
-                            StatisticSmallBlockView(value: "00:15", description: "Самый быстрый тест", iconName: "hare.fill")
+                            StatisticSmallBlockView(value: formatTime(longestTest), description: "Самый долгий тест", iconName: "tortoise.fill")
+                            StatisticSmallBlockView(value: formatTime(shortestTest), description: "Самый быстрый тест", iconName: "hare.fill")
                         }
+
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 10)
@@ -39,7 +61,16 @@ struct StatisticsView: View {
                 Spacer()
             }
             .navigationBarTitle("Статистика", displayMode: .large)
+            .onAppear {
+                sessions = TestStatisticsStorage.shared.loadAllSessions()
+            }
         }
+    }
+
+    func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let seconds = seconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }
 

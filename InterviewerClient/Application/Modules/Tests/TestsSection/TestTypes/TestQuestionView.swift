@@ -167,6 +167,14 @@ struct TestQuestionView: View {
         timerActive = false
         timeTaken = timeFormatted(300 - timeRemaining)
         showResults = true
+
+        let durationInSeconds = 300 - timeRemaining
+        let session = TestSession(
+            correctAnswers: correctAnswers,
+            incorrectAnswers: incorrectAnswers,
+            duration: durationInSeconds
+        )
+        TestStatisticsStorage.shared.saveSession(session)
     }
 
     private func restartTest() {
