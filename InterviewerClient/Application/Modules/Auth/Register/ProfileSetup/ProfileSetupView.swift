@@ -2,6 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct ProfileSetupView: View {
+    @Environment(\.colorScheme) var colorScheme
     var onBack: () -> Void
     var onComplete: () -> Void
     
@@ -29,19 +30,20 @@ struct ProfileSetupView: View {
                         ZStack {
                             Circle()
                                 .fill(Color.gray.opacity(0.2))
-                                .frame(width: 100, height: 100)
-                            
+                                .frame(width: 120, height: 120)
+
                             Image(systemName: "camera.fill")
                                 .font(.system(size: 30))
                                 .foregroundColor(.gray)
                         }
+                        .padding(.vertical, 20)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 
                 Text("Как к вам обращаться?")
-                    .font(.title3)
-                    .foregroundColor(.black)
+                    .font(.title2)
+                    .foregroundColor(.primary)
                     .padding(.horizontal, 20)
                 
                 TextField("ФИО", text: $fullName)
@@ -62,8 +64,8 @@ struct ProfileSetupView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.black)
-                .foregroundColor(.white)
+                .background(colorScheme == .dark ? Color.white : Color.black)
+                .foregroundColor(colorScheme == .dark ? Color.black : Color.white)
                 .cornerRadius(12)
             }
             .padding(.horizontal, 20)

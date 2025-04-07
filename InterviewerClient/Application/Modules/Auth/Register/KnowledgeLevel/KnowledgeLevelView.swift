@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct KnowledgeLevelView: View {
+    @Environment(\.colorScheme) var colorScheme
     var onBack: () -> Void
     var onNext: () -> Void
     
@@ -48,8 +49,8 @@ struct KnowledgeLevelView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.black)
-                .foregroundColor(.white)
+                .background(colorScheme == .dark ? Color.white : Color.black)
+                .foregroundColor(colorScheme == .dark ? Color.black : Color.white)
                 .cornerRadius(12)
             }
             .padding(.horizontal, 20)

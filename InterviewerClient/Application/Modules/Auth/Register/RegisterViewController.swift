@@ -9,12 +9,8 @@ class RegisterViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
 
         let registerView = RegisterView(
-            onBack: { [weak self] in
-                self?.coordinator?.goBack()
-            },
-            onNext: { [weak self] in
-                self?.coordinator?.showProfileSetup()
-            }
+            onBack: { [weak self] in self?.coordinator?.goBack() },
+            onNext: { [weak self] in self?.coordinator?.showProfileSetup() }
         )
 
         let hostingController = UIHostingController(rootView: registerView)
