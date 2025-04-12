@@ -3,25 +3,27 @@ import PhotosUI
 
 struct EditProfileView: View {
     @Environment(\.presentationMode) var presentationMode
-    
+
     @Binding var fullName: String
     @Binding var knowledgeLevel: String
     @Binding var profileImage: UIImage?
-    
+
     let knowledgeLevels = ["Junior", "Middle", "Senior"]
-    
+
     @State private var tempFullName: String
+    @State private var tempKnowledgeLevel: String
     @State private var tempImage: UIImage?
     @State private var isImagePickerPresented = false
-    
+
     init(fullName: Binding<String>, knowledgeLevel: Binding<String>, profileImage: Binding<UIImage?>) {
         _fullName = fullName
         _knowledgeLevel = knowledgeLevel
         _profileImage = profileImage
         _tempFullName = State(initialValue: fullName.wrappedValue)
+        _tempKnowledgeLevel = State(initialValue: knowledgeLevel.wrappedValue)
         _tempImage = State(initialValue: profileImage.wrappedValue)
     }
-    
+
     var body: some View {
         VStack {
             ZStack {
@@ -29,7 +31,7 @@ struct EditProfileView: View {
                     .font(.headline)
                     .bold()
                     .frame(maxWidth: .infinity, alignment: .center)
-                
+
                 HStack {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
@@ -39,11 +41,12 @@ struct EditProfileView: View {
                             .foregroundColor(.primary)
                     }
                     .padding(.leading, 20)
-                    
+
                     Spacer()
-                    
+
                     Button(action: {
                         fullName = tempFullName
+                        knowledgeLevel = tempKnowledgeLevel
                         profileImage = tempImage
                         presentationMode.wrappedValue.dismiss()
                     }) {
@@ -59,7 +62,7 @@ struct EditProfileView: View {
             }
             .frame(height: 44)
             .padding(.top, 10)
-            
+
             ScrollView {
                 VStack(spacing: 15) {
                     Button(action: {
@@ -82,10 +85,10 @@ struct EditProfileView: View {
                         }
                     }
                     .padding(.bottom, 15)
-                    .sheet(isPresented: $isImagePickerPresented) {
+                    .fullScreenCover(isPresented: $isImagePickerPresented) {
                         ImagePicker(image: $tempImage)
                     }
-                    
+
                     TextField("ФИО", text: $tempFullName)
                         .autocapitalization(.none)
                         .disableAutocorrection(true)
@@ -93,8 +96,8 @@ struct EditProfileView: View {
                         .background(RoundedRectangle(cornerRadius: 10)
                             .fill(Color.gray.opacity(0.2)))
                         .padding(.horizontal, 20)
-                    
-                    Picker("Уровень знаний", selection: $knowledgeLevel) {
+
+                    Picker("Уровень знаний", selection: $tempKnowledgeLevel) {
                         ForEach(knowledgeLevels, id: \.self) { Text($0) }
                     }
                     .pickerStyle(SegmentedPickerStyle())
@@ -102,7 +105,7 @@ struct EditProfileView: View {
                 }
                 .padding(.top, 20)
             }
-            
+
             Spacer()
         }
         .navigationBarHidden(true)
@@ -113,7 +116,7 @@ struct EditProfileView_Previews: PreviewProvider {
     static var previews: some View {
         EditProfileView(
             fullName: .constant("Лиза"),
-            knowledgeLevel: .constant("Средний"),
+            knowledgeLevel: .constant("Middle"),
             profileImage: .constant(nil)
         )
     }

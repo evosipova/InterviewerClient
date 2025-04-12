@@ -1,17 +1,17 @@
 import SwiftUI
 
 struct KnowledgeLevelView: View {
+    @EnvironmentObject var userProfile: UserProfile
     @Environment(\.colorScheme) var colorScheme
     var onBack: () -> Void
     var onNext: () -> Void
-    
-    @State private var selectedLevel: String = "Junior"
+
     let levels = ["Junior", "Middle", "Senior"]
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             CustomNavBar(title: "Выберите уровень", onBack: onBack)
-            
+
             VStack(spacing: 15) {
                 ForEach(levels, id: \.self) { level in
                     HStack {
@@ -20,10 +20,10 @@ struct KnowledgeLevelView: View {
                             .bold()
                         Spacer()
                         Circle()
-                            .fill(selectedLevel == level ? Color.green.opacity(0.8) : Color.gray.opacity(0.2))
+                            .fill(userProfile.knowledgeLevel == level ? Color.green.opacity(0.8) : Color.gray.opacity(0.2))
                             .frame(width: 30, height: 30)
                             .overlay(
-                                selectedLevel == level ? Image(systemName: "checkmark")
+                                userProfile.knowledgeLevel == level ? Image(systemName: "checkmark")
                                     .foregroundColor(.black)
                                     .font(.system(size: 18, weight: .bold)) : nil
                             )
@@ -32,19 +32,17 @@ struct KnowledgeLevelView: View {
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(15)
                     .onTapGesture {
-                        selectedLevel = level
+                        userProfile.knowledgeLevel = level
                     }
                 }
             }
             .padding(.horizontal, 20)
-            
+
             Spacer()
-            
+
             Button(action: onNext) {
                 HStack {
-                    Text("Далее")
-                        .font(.headline)
-                        .bold()
+                    Text("Далее").font(.headline).bold()
                     Image(systemName: "arrow.right")
                 }
                 .frame(maxWidth: .infinity)

@@ -1,37 +1,46 @@
 import SwiftUI
 import PhotosUI
 
+import SwiftUI
+import Combine
+
+class UserProfile: ObservableObject {
+    static let shared = UserProfile()
+
+    @Published var fullName: String = "Liza"
+    @Published var profileImage: UIImage? = nil
+    @Published var knowledgeLevel: String = "Junior"
+
+    private init() {}
+}
+
 struct ProfileSetupView: View {
+    @EnvironmentObject var userProfile: UserProfile
     @Environment(\.colorScheme) var colorScheme
     var onBack: () -> Void
     var onComplete: () -> Void
-    
-    @State private var fullName: String = ""
-    @State private var selectedImage: UIImage? = nil
+
     @State private var isImagePickerPresented = false
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             CustomNavBar(title: "Заполните данные", onBack: onBack)
-            
+
             VStack(alignment: .leading, spacing: 20) {
                 VStack {
-                    if let image = selectedImage {
+                    if let image = userProfile.profileImage {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 100, height: 100)
                             .clipShape(Circle())
                             .overlay(
-                                Circle()
-                                    .stroke(Color.gray.opacity(0.5), lineWidth: 2)
+                                Circle().stroke(Color.gray.opacity(0.5), lineWidth: 2)
                             )
                     } else {
                         ZStack {
-                            Circle()
-                                .fill(Color.gray.opacity(0.2))
+                            Circle().fill(Color.gray.opacity(0.2))
                                 .frame(width: 120, height: 120)
-
                             Image(systemName: "camera.fill")
                                 .font(.system(size: 30))
                                 .foregroundColor(.gray)
@@ -40,26 +49,27 @@ struct ProfileSetupView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
-                
+                .onTapGesture {
+                    isImagePickerPresented = true
+                }
+
                 Text("Как к вам обращаться?")
                     .font(.title2)
                     .foregroundColor(.primary)
                     .padding(.horizontal, 20)
-                
-                TextField("ФИО", text: $fullName)
+
+                TextField("ФИО", text: $userProfile.fullName)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.2)))
                     .padding(.horizontal, 20)
             }
             .padding(.bottom, 30)
-            
+
             Spacer()
-            
+
             Button(action: onComplete) {
                 HStack {
-                    Text("Далее")
-                        .font(.headline)
-                        .bold()
+                    Text("Далее").font(.headline).bold()
                     Image(systemName: "arrow.right")
                 }
                 .frame(maxWidth: .infinity)
@@ -71,8 +81,8 @@ struct ProfileSetupView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
         }
-        .sheet(isPresented: $isImagePickerPresented) {
-            ImagePicker(image: $selectedImage)
+        .fullScreenCover(isPresented: $isImagePickerPresented) {
+            ImagePicker(image: $userProfile.profileImage)
         }
         .navigationBarHidden(true)
     }

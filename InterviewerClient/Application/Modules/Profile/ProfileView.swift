@@ -2,57 +2,64 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var coordinator: AppCoordinator
-    
+    @ObservedObject var userProfile = UserProfile.shared
+
     @AppStorage("selectedTheme") private var selectedTheme: String = "Системная"
-    
-    @State private var fullName: String = "annaliza2011"
-    @State private var birthdate = Date()
-    @State private var selectedGender = "Не указывать"
-    @State private var knowledgeLevel = "Средний"
     @State private var showHistorySheet = false
     @State private var showNotificationsSheet = false
-    
-    @State private var profileImage: UIImage?
-    
+
     let themes = ["Системная", "Светлая", "Тёмная"]
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 8) {
                     VStack {
-                        if let image = profileImage {
+                        if let image = userProfile.profileImage {
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 100, height: 100)
                                 .clipShape(Circle())
                                 .overlay(Circle().stroke(Color.blue, lineWidth: 2))
+                                .padding(.top, 10)
                         } else {
                             Image(systemName: "person.crop.circle.fill")
                                 .resizable()
                                 .frame(width: 100, height: 100)
                                 .foregroundColor(.blue)
+                                .padding(.top, 10)
                         }
-                        
-                        HStack {
-                            Text(fullName)
-                                .font(.title2)
-                                .bold()
+
+                        HStack(spacing: 8) {
+                            VStack(alignment: .center) {
+                                Text(userProfile.fullName)
+                                    .font(.title)
+                                    .bold()
+                                Text(userProfile.knowledgeLevel)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+
                             NavigationLink(
                                 destination: EditProfileView(
-                                    fullName: $fullName,
-                                    knowledgeLevel: $knowledgeLevel,
-                                    profileImage: $profileImage
+                                    fullName: $userProfile.fullName,
+                                    knowledgeLevel: $userProfile.knowledgeLevel,
+                                    profileImage: $userProfile.profileImage
                                 )
                             ) {
                                 Image(systemName: "pencil")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20) 
                                     .foregroundColor(.gray)
                             }
                         }
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
                     }
                     .padding(.bottom, 20)
-                    
+
                     Button(action: { showHistorySheet.toggle() }) {
                         HStack {
                             Image(systemName: "clock.fill")
