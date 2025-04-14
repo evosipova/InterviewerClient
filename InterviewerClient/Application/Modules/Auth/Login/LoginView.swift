@@ -7,6 +7,7 @@ struct LoginView: View {
 
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var errorMessage: String? = nil
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -29,7 +30,19 @@ struct LoginView: View {
 
             Spacer()
 
-            Button(action: onNext) {
+            Button(action: {
+                Task {
+                    do {
+                        let token = try await AuthService.shared.login(email: email, password: password)
+                        TokenStorage.shared.token = token
+                        errorMessage = nil
+                        onNext()
+                    } catch {
+                        errorMessage = "Ошибка авторизации. Проверьте email и пароль."
+                        print("Ошибка входа: \(error)")
+                    }
+                }
+            }) {
                 HStack {
                     Text("Далее")
                         .font(.headline)

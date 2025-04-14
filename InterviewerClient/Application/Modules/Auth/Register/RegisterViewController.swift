@@ -13,7 +13,9 @@ class RegisterViewController: UIViewController {
             onNext: { [weak self] in self?.coordinator?.showProfileSetup() }
         )
 
-        let hostingController = UIHostingController(rootView: registerView)
+        let hostingController = UIHostingController(
+            rootView: registerView.environmentObject(UserProfile.shared)
+        )
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.view.frame = view.bounds

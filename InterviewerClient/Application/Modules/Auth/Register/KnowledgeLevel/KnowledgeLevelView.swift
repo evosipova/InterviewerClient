@@ -3,6 +3,9 @@ import SwiftUI
 struct KnowledgeLevelView: View {
     @EnvironmentObject var userProfile: UserProfile
     @Environment(\.colorScheme) var colorScheme
+    @State private var isLoading = false
+    @State private var errorMessage: String? = nil
+
     var onBack: () -> Void
     var onNext: () -> Void
 
@@ -40,10 +43,35 @@ struct KnowledgeLevelView: View {
 
             Spacer()
 
-            Button(action: onNext) {
+            Button(action: {
+                Task {
+                    isLoading = true
+                    errorMessage = nil
+
+                    let profile = userProfile
+                    let email = profile.email
+                    let password = profile.password
+                    let name = profile.fullName
+
+                    do {
+                        try await AuthService.shared.register(email: email, password: password, name: name)
+                        let token = try await AuthService.shared.login(email: email, password: password)
+                        TokenStorage.shared.token = token
+                        onNext()
+                    } catch {
+                        errorMessage = "Ошибка: \(error.localizedDescription)"
+                    }
+
+                    isLoading = false
+                }
+            }) {
                 HStack {
-                    Text("Далее").font(.headline).bold()
-                    Image(systemName: "arrow.right")
+                    if isLoading {
+                        ProgressView()
+                    } else {
+                        Text("Далее").font(.headline).bold()
+                        Image(systemName: "arrow.right")
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -52,7 +80,15 @@ struct KnowledgeLevelView: View {
                 .cornerRadius(12)
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 30)
+            .padding(.bottom, 10)
+
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .font(.footnote)
+                    .padding(.horizontal, 20)
+            }
+
         }
         .navigationBarHidden(true)
     }

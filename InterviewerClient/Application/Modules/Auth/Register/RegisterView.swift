@@ -5,21 +5,21 @@ struct RegisterView: View {
     var onBack: () -> Void
     var onNext: () -> Void
 
-    @State private var email: String = ""
-    @State private var password: String = ""
+    @EnvironmentObject var userProfile: UserProfile
+//    @State private var password: String = ""
 
     var body: some View {
         VStack(alignment: .leading) {
             CustomNavBar(title: "Регистрация", onBack: onBack)
 
             VStack(spacing: 15) {
-                TextField("Email", text: $email)
+                TextField("Email", text: $userProfile.email)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 10)
                         .fill(Color.gray.opacity(0.2)))
                     .padding(.horizontal, 20)
 
-                SecureField("Пароль", text: $password)
+                SecureField("Пароль", text: $userProfile.password)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 10)
                         .fill(Color.gray.opacity(0.2)))

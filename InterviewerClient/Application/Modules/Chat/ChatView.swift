@@ -10,9 +10,9 @@ struct ChatView: View {
     @State private var textFieldHeight: CGFloat = 50
     
     @StateObject private var openAI = OpenAIService()
-    @State private var gptMessages: [OpenAIChatMessage] = [
-        OpenAIChatMessage(role: "system", content: "Ты ios-разработчик, задавай вопросы по swift")
-    ]
+//    @State private var gptMessages: [OpenAIChatMessage] = [
+//        OpenAIChatMessage(role: "system", content: "Ты ios-разработчик, задавай вопросы по swift")
+//    ]
 
     @State private var hasStartedChat = false
 
@@ -110,7 +110,8 @@ struct ChatView: View {
     private func sendMessage() {
         guard !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
 
-        let userMessage = "🧑‍💻 " + messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let userText = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let userMessage = "🧑‍💻 " + userText
 
         if currentChatIndex == nil {
             chatHistory.append([])
@@ -118,9 +119,7 @@ struct ChatView: View {
         }
 
         hasStartedChat = true
-
         messages.append(userMessage)
-        gptMessages.append(OpenAIChatMessage(role: "user", content: messageText))
         saveChatHistory()
 
         messageText = ""
@@ -128,13 +127,11 @@ struct ChatView: View {
 
         Task {
             do {
-                let gptReply = try await openAI.sendMessageToGPT(messages: gptMessages)
+                let gptReply = try await openAI.sendMessageToGPT(answer: userText)
                 let trimmedReply = gptReply.trimmingCharacters(in: .whitespacesAndNewlines)
 
                 let response = "🤖 " + trimmedReply
                 messages.append(response)
-
-                gptMessages.append(OpenAIChatMessage(role: "assistant", content: trimmedReply))
                 saveChatHistory()
 
             } catch {
@@ -143,6 +140,8 @@ struct ChatView: View {
             }
         }
     }
+
+
     
     private func createNewChat() {
         if let index = currentChatIndex, !messages.isEmpty {
@@ -150,9 +149,9 @@ struct ChatView: View {
         }
 
         messages = []
-        gptMessages = [
-            OpenAIChatMessage(role: "system", content: "Ты ios-разработчик, задавай вопросы по swift")
-        ]
+//        gptMessages = [
+//            OpenAIChatMessage(role: "system", content: "Ты ios-разработчик, задавай вопросы по swift")
+//        ]
         currentChatIndex = nil
         hasStartedChat = false
     }

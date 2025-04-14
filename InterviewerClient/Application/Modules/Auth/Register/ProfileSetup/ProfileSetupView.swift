@@ -6,7 +6,8 @@ import Combine
 
 class UserProfile: ObservableObject {
     static let shared = UserProfile()
-
+    @Published var email: String = ""
+    @Published var password: String = ""
     @Published var fullName: String = "Liza"
     @Published var profileImage: UIImage? = nil
     @Published var knowledgeLevel: String = "Junior"
@@ -15,6 +16,7 @@ class UserProfile: ObservableObject {
 }
 
 struct ProfileSetupView: View {
+
     @EnvironmentObject var userProfile: UserProfile
     @Environment(\.colorScheme) var colorScheme
     var onBack: () -> Void
