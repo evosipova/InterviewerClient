@@ -1,5 +1,11 @@
 import Foundation
 
+enum AssistantType: String, CaseIterable, Codable {
+    case hr
+    case technical
+    case algorithms
+}
+
 struct OpenAIChatMessage: Codable {
     let role: String
     let content: String
@@ -7,6 +13,7 @@ struct OpenAIChatMessage: Codable {
 
 struct InterviewRequest: Codable {
     let answer: String
+    let assistantType: AssistantType
 }
 
 struct InterviewResponse: Codable {
@@ -18,8 +25,9 @@ class OpenAIService: ObservableObject {
 
     private let url = URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/interview")!
 
-    func sendMessageToGPT(answer: String) async throws -> String {
-        let body = InterviewRequest(answer: answer)
+    func sendMessageToGPT(answer: String, assistantRole: ChatView.AssistantType) async throws -> String {
+        let backendAssistantType = mapToBackendAssistant(assistantRole)
+        let body = InterviewRequest(answer: answer, assistantType: backendAssistantType)
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -42,4 +50,14 @@ class OpenAIService: ObservableObject {
         return decoded.question
     }
 
+    private func mapToBackendAssistant(_ role: ChatView.AssistantType) -> AssistantType {
+        switch role {
+        case .hr:
+            return .hr
+        case .technical:
+            return .technical
+        case .algorithms:
+            return .algorithms
+        }
+    }
 }

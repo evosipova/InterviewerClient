@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ChatHistoryView: View {
-    @Binding var chats: [[String]]
+    @Binding var chats: [ChatHistoryEntryModel]
     var selectChat: (Int) -> Void
     var onDeleteAll: () -> Void
     @Environment(\.presentationMode) var presentationMode
@@ -21,7 +21,7 @@ struct ChatHistoryView: View {
                             ForEach(chats.indices, id: \.self) { index in
                                 ChatRowView(
                                     chatIndex: index,
-                                    lastMessage: chats[index].last ?? "Нет сообщений",
+                                    lastMessage: chats[index].messages.last ?? "Нет сообщений",
                                     onTap: {
                                         selectChat(index)
                                         presentationMode.wrappedValue.dismiss()
@@ -65,10 +65,17 @@ struct ChatHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         ChatHistoryView(
             chats: .constant([
-                ["Привет, как дела?", "Я ИИ, чем могу помочь?"],
-                ["Как работает SwiftUI?", "SwiftUI — это декларативный UI-фреймворк от Apple."]
+                ChatHistoryEntryModel(
+                    messages: ["Привет! Как дела?", "Отлично, а у тебя?"],
+                    assistant: .technical
+                ),
+                ChatHistoryEntryModel(
+                    messages: ["Что такое SwiftUI?", "Это фреймворк от Apple для создания UI."],
+                    assistant: .hr
+                )
             ]),
-            selectChat: { _ in }, onDeleteAll: {}
+            selectChat: { _ in },
+            onDeleteAll: {}
         )
     }
 }

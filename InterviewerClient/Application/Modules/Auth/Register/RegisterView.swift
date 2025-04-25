@@ -6,7 +6,6 @@ struct RegisterView: View {
     var onNext: () -> Void
 
     @EnvironmentObject var userProfile: UserProfile
-//    @State private var password: String = ""
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -54,4 +53,3 @@ struct RegisterView_Previews: PreviewProvider {
         RegisterView(onBack: {}, onNext: {})
     }
 }
-
