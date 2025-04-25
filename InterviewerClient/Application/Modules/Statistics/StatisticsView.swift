@@ -2,6 +2,8 @@ import SwiftUI
 
 struct StatisticsView: View {
     @State private var sessions: [TestSession] = []
+    @State private var showLeaderboard = false
+    @ObservedObject var userProfile = UserProfile.shared
 
     var totalCorrect: Int {
         sessions.reduce(0) { $0 + $1.correctAnswers }
@@ -21,15 +23,26 @@ struct StatisticsView: View {
     var shortestTest: Int {
         sessions.map { $0.duration }.min() ?? 0
     }
-    
+
     var body: some View {
         NavigationView {
             VStack {
                 ScrollView {
                     VStack(spacing: 20) {
-                        StatisticBlockView(title: "Таблица лидеров", subtitle: "Доберитесь до вершины", iconName: "trophy.fill")
-                        StatisticBlockView(title: "Показать ранг", subtitle: "Проходите больше тестов", iconName: "triangle.fill")
-                        
+                        Button(action: {
+                            showLeaderboard.toggle()
+                        }) {
+                            StatisticBlockView(title: "Таблица лидеров", subtitle: "Доберитесь до вершины", iconName: "trophy.fill")
+                        }
+                        .sheet(isPresented: $showLeaderboard) {
+                            LeaderBoardView(
+                                currentUserName: userProfile.fullName,
+                                correctAnswers: totalCorrect,
+                                totalTime: totalTime
+                            )
+                        }
+
+
                         Text("Ваши знания растут")
                             .font(.subheadline)
                             .foregroundColor(.gray)
@@ -44,20 +57,15 @@ struct StatisticsView: View {
                             StatisticSmallBlockView(value: "\(totalTests)", description: "Всего тестов", iconName: "doc.fill")
                         }
 
-//                        StatisticsPieChartView()
-//                            .frame(height: 200)
-//                            .padding(.top, 20)
-
                         HStack(spacing: 15) {
                             StatisticSmallBlockView(value: formatTime(longestTest), description: "Самый долгий тест", iconName: "tortoise.fill")
                             StatisticSmallBlockView(value: formatTime(shortestTest), description: "Самый быстрый тест", iconName: "hare.fill")
                         }
-
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 10)
                 }
-                
+
                 Spacer()
             }
             .navigationBarTitle("Статистика", displayMode: .large)
