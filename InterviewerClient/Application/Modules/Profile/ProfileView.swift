@@ -31,11 +31,14 @@ struct ProfileView: View {
                                 .padding(.top, 10)
                         }
 
-                        HStack(spacing: 8) {
-                            VStack(alignment: .center) {
+                        ZStack(alignment: .topTrailing) {
+                            VStack(spacing: 4) {
                                 Text(userProfile.fullName)
                                     .font(.title)
                                     .bold()
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity)
+
                                 Text(userProfile.knowledgeLevel)
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
@@ -51,14 +54,15 @@ struct ProfileView: View {
                                 Image(systemName: "pencil")
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 20, height: 20) 
+                                    .frame(width: 18, height: 18)
                                     .foregroundColor(.gray)
+                                    .padding(.top, 20)
                             }
                         }
-                        .frame(maxWidth: .infinity)
-                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 120)
+
                     }
-                    .padding(.bottom, 20)
+                    .frame(maxWidth: .infinity)
 
                     Button(action: { showHistorySheet.toggle() }) {
                         HStack {
