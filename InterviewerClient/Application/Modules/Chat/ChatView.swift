@@ -90,6 +90,7 @@ struct ChatView: View {
                                 .padding(.leading, 14)
                                 .padding(.vertical, 10)
                                 .foregroundColor(.gray)
+                                .allowsHitTesting(false)
                         }
 
                         TextEditor(text: $messageText)
@@ -135,6 +136,9 @@ struct ChatView: View {
             )
             .sheet(isPresented: $showChatHistory, onDismiss: handleChatHistoryDismiss) {
                 ChatHistoryView(chats: $chatHistory, selectChat: loadChat, onDeleteAll: {})
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
         }
     }

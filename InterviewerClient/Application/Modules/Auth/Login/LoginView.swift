@@ -59,6 +59,9 @@ struct LoginView: View {
             .padding(.bottom, 30)
 
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .navigationBarHidden(true)
     }
 }

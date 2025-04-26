@@ -108,6 +108,9 @@ struct EditProfileView: View {
 
             Spacer()
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .navigationBarHidden(true)
     }
 }

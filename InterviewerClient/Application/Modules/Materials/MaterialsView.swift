@@ -121,6 +121,9 @@ struct MaterialsView: View {
             .fullScreenCover(item: $selectedItem) { item in
                 MaterialScrollDetailView(item: item, onBack: { selectedItem = nil })
             }
+            .onTapGesture {
+                hideKeyboard()
+            }
         }
     }
     

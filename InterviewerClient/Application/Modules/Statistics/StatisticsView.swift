@@ -42,7 +42,6 @@ struct StatisticsView: View {
                             )
                         }
 
-
                         Text("Ваши знания растут")
                             .font(.subheadline)
                             .foregroundColor(.gray)

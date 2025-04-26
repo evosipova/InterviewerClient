@@ -44,6 +44,9 @@ struct RegisterView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .navigationBarHidden(true)
     }
 }

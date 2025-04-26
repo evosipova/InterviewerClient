@@ -8,7 +8,7 @@ class UserProfile: ObservableObject {
     static let shared = UserProfile()
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var fullName: String = "Liza"
+    @Published var fullName: String = ""
     @Published var profileImage: UIImage? = nil
     @Published var knowledgeLevel: String = "Junior"
 
@@ -85,6 +85,9 @@ struct ProfileSetupView: View {
         }
         .fullScreenCover(isPresented: $isImagePickerPresented) {
             ImagePicker(image: $userProfile.profileImage)
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
         .navigationBarHidden(true)
     }

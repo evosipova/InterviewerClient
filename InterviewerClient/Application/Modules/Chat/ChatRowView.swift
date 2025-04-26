@@ -13,7 +13,7 @@ struct ChatRowView: View {
             VStack(alignment: .leading) {
                 Text("Чат \(chatIndex + 1)")
                     .font(.subheadline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.black)
                     .bold()
                 Text(lastMessage)
                     .font(.footnote)
