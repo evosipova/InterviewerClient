@@ -15,6 +15,9 @@ struct TestsView: View {
                         NavigationLink(destination: OneMistakeTestView()) {
                             TestBlockView(title: "Одна ошибка", subtitle: "И ты ошибся", color: .orange, iconName: "exclamationmark.triangle.fill")
                         }
+                        NavigationLink(destination: AITestView()) {
+                            TestBlockView(title: "Тест от ИИ", subtitle: "Новый опыт с GPT", color: .blue, iconName: "brain.head.profile")
+                        }
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 10)

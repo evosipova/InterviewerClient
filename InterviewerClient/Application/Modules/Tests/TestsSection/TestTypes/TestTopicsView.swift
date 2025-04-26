@@ -53,7 +53,7 @@ struct TestTopicsView: View {
                         .buttonStyle(PlainButtonStyle())
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 10)
             }
         }
         .navigationBarHidden(true)

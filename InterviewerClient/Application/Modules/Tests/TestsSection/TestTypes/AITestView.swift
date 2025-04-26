@@ -1,28 +1,27 @@
 import SwiftUI
 
-struct OneMistakeTestView: View {
+struct AITestView: View {
     @Environment(\.presentationMode) var presentationMode
-    
+
     @State private var currentQuestionIndex = 0
     @State private var selectedAnswer: String? = nil
     @State private var correctAnswers = 0
     @State private var incorrectAnswers = 0
     @State private var showResults = false
     @State private var history: [(question: String, userAnswer: String, correctAnswer: String, explanation: String)] = []
-    
-    @State private var timeRemaining = 3600
-    @State private var timerActive = true
-    @State private var timeTaken = ""
-    @State private var showHistorySheet = false
 
     @State private var selectedEntry: TestHistoryEntry? = nil
     @State private var lastEntry: TestHistoryEntry? = nil
     @State private var isAnswerSelected = false
 
+    @State private var timeRemaining = 300
+    @State private var timerActive = true
+    @State private var timeTaken = ""
+
     let questions: [Question]
 
     init() {
-        self.questions = QuestionLoader.loadAllQuestions().shuffled()
+        self.questions = Array(QuestionLoader.loadAllQuestions().shuffled().prefix(10))
     }
 
     var body: some View {
@@ -35,10 +34,10 @@ struct OneMistakeTestView: View {
                             .foregroundColor(.primary)
                     }
                     .padding(.leading, 20)
-                    
+
                     Spacer()
 
-                    Text("Одна ошибка")
+                    Text("Тест от ИИ")
                         .font(.headline)
                         .bold()
 
@@ -49,20 +48,20 @@ struct OneMistakeTestView: View {
 
                 VStack(spacing: 5) {
                     HStack {
-                        Text("Вопрос \(currentQuestionIndex + 1)")
+                        Text("Вопрос \(currentQuestionIndex + 1) из \(questions.count)")
                             .font(.headline)
                             .bold()
-                        
+
                         Spacer()
-                        
-                        Text("\(timeFormatted(timeRemaining))")
+
+                        Text(timeFormatted(timeRemaining))
                             .font(.headline)
                             .bold()
                             .foregroundColor(timeRemaining > 60 ? .green : .red)
                     }
                     .padding(.horizontal)
 
-                    ProgressView(value: Double(timeRemaining) / 3600)
+                    ProgressView(value: Double(timeRemaining) / 300)
                         .progressViewStyle(LinearProgressViewStyle(tint: timeRemaining > 60 ? .green : .red))
                         .padding(.horizontal)
                 }
@@ -103,7 +102,7 @@ struct OneMistakeTestView: View {
             .navigationDestination(isPresented: $showResults) {
                 TestResultsView(
                     correctAnswers: correctAnswers,
-                    incorrectAnswers: 1,
+                    incorrectAnswers: incorrectAnswers,
                     timeTaken: timeTaken,
                     onRestart: restartTest,
                     onContinue: goToTestsView,
@@ -118,7 +117,7 @@ struct OneMistakeTestView: View {
                         history: item.answers,
                         correctAnswers: item.correctAnswers,
                         incorrectAnswers: item.incorrectAnswers,
-                        topic: item.topic,
+                        topic: "Тест от ИИ",
                         timeTaken: item.timeTaken
                     )
                 }
@@ -132,7 +131,7 @@ struct OneMistakeTestView: View {
         guard !isAnswerSelected else { return }
         isAnswerSelected = true
         selectedAnswer = answer.text
-        
+
         let question = questions[currentQuestionIndex]
         if let correctAnswer = question.answers.first(where: { $0.isCorrect })?.text {
             history.append((question.questionText, answer.text, correctAnswer, question.explanation))
@@ -140,16 +139,10 @@ struct OneMistakeTestView: View {
 
         if answer.isCorrect {
             correctAnswers += 1
-            nextQuestionOrFinish()
         } else {
             incorrectAnswers += 1
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                completeTest()
-            }
         }
-    }
 
-    private func nextQuestionOrFinish() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if currentQuestionIndex < questions.count - 1 {
                 currentQuestionIndex += 1
@@ -163,7 +156,7 @@ struct OneMistakeTestView: View {
 
     private func startTimer() {
         timerActive = true
-        timeRemaining = 3600
+        timeRemaining = 300
         DispatchQueue.global(qos: .background).async {
             while self.timerActive && self.timeRemaining > 0 {
                 sleep(1)
@@ -180,16 +173,8 @@ struct OneMistakeTestView: View {
     private func completeTest() {
         guard !showResults else { return }
         timerActive = false
-        timeTaken = timeFormatted(3600 - timeRemaining)
+        timeTaken = timeFormatted(300 - timeRemaining)
         showResults = true
-
-        let durationInSeconds = 3600 - timeRemaining
-        let session = TestSession(
-            correctAnswers: correctAnswers,
-            incorrectAnswers: incorrectAnswers,
-            duration: durationInSeconds
-        )
-        TestStatisticsStorage.shared.saveSession(session)
 
         let structuredAnswers = history.map {
             TestHistoryAnswer(
@@ -200,7 +185,7 @@ struct OneMistakeTestView: View {
             )
         }
         let entry = TestHistoryEntry(
-            topic: "Одна ошибка",
+            topic: "Тест от ИИ",
             answers: structuredAnswers,
             correctAnswers: correctAnswers,
             incorrectAnswers: incorrectAnswers,
@@ -213,12 +198,12 @@ struct OneMistakeTestView: View {
     private func restartTest() {
         currentQuestionIndex = 0
         correctAnswers = 0
-        incorrectAnswers = 0 
+        incorrectAnswers = 0
         selectedAnswer = nil
         history.removeAll()
         showResults = false
-        timeRemaining = 3600
-        isAnswerSelected = false 
+        timeRemaining = 300
+        isAnswerSelected = false
         startTimer()
     }
 

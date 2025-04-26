@@ -91,7 +91,7 @@ struct SpeedTestView: View {
                                     }
                                 }
                             }
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal, 10)
                         }
                     }
                     .padding(.top, 10)
