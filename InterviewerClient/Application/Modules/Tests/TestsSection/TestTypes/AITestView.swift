@@ -18,113 +18,141 @@ struct AITestView: View {
     @State private var timerActive = true
     @State private var timeTaken = ""
 
-    let questions: [Question]
-
-    init() {
-        self.questions = Array(QuestionLoader.loadAllQuestions().shuffled().prefix(10))
-    }
+    @State private var questions: [Question] = []
+    @State private var isLoading = true
+    @State private var errorMessage: String? = nil
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .foregroundColor(.primary)
+            if isLoading {
+                ProgressView("Загрузка вопросов...")
+                    .navigationBarHidden(true)
+            } else if let errorMessage = errorMessage {
+                VStack {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                    Button("Повторить") {
+                        loadQuestions()
                     }
-                    .padding(.leading, 20)
-
-                    Spacer()
-
-                    Text("Тест от ИИ")
-                        .font(.headline)
-                        .bold()
-
-                    Spacer()
                 }
-                .frame(height: 44)
-                .padding(.top, 10)
-
-                VStack(spacing: 5) {
+                .navigationBarHidden(true)
+            } else {
+                VStack(alignment: .leading) {
                     HStack {
-                        Text("Вопрос \(currentQuestionIndex + 1) из \(questions.count)")
+                        Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                            Image(systemName: "chevron.left")
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                        }
+                        .padding(.leading, 20)
+
+                        Spacer()
+
+                        Text("Тест от ИИ")
                             .font(.headline)
                             .bold()
 
                         Spacer()
-
-                        Text(timeFormatted(timeRemaining))
-                            .font(.headline)
-                            .bold()
-                            .foregroundColor(timeRemaining > 60 ? .green : .red)
                     }
-                    .padding(.horizontal)
+                    .frame(height: 44)
+                    .padding(.top, 10)
 
-                    ProgressView(value: Double(timeRemaining) / 300)
-                        .progressViewStyle(LinearProgressViewStyle(tint: timeRemaining > 60 ? .green : .red))
+                    VStack(spacing: 5) {
+                        HStack {
+                            Text("Вопрос \(currentQuestionIndex + 1) из \(questions.count)")
+                                .font(.headline)
+                                .bold()
+
+                            Spacer()
+
+                            Text(timeFormatted(timeRemaining))
+                                .font(.headline)
+                                .bold()
+                                .foregroundColor(timeRemaining > 60 ? .green : .red)
+                        }
                         .padding(.horizontal)
-                }
-                .padding(.bottom, 10)
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 15) {
-                        if currentQuestionIndex < questions.count {
-                            Text(questions[currentQuestionIndex].questionText)
-                                .font(.title3)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal)
+                        ProgressView(value: Double(timeRemaining) / 300)
+                            .progressViewStyle(LinearProgressViewStyle(tint: timeRemaining > 60 ? .green : .red))
+                            .padding(.horizontal)
+                    }
+                    .padding(.bottom, 10)
 
-                            VStack(spacing: 10) {
-                                ForEach(questions[currentQuestionIndex].answers, id: \.text) { answer in
-                                    Button(action: {
-                                        handleAnswerSelection(answer)
-                                    }) {
-                                        Text(answer.text)
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .background(selectedAnswer == answer.text
-                                                        ? (answer.isCorrect ? Color.green.opacity(0.8) : Color.red.opacity(0.8))
-                                                        : Color.gray.opacity(0.2))
-                                            .cornerRadius(10)
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 15) {
+                            if currentQuestionIndex < questions.count {
+                                Text(questions[currentQuestionIndex].questionText)
+                                    .font(.title3)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal)
+
+                                VStack(spacing: 10) {
+                                    ForEach(questions[currentQuestionIndex].answers, id: \.text) { answer in
+                                        Button(action: {
+                                            handleAnswerSelection(answer)
+                                        }) {
+                                            Text(answer.text)
+                                                .frame(maxWidth: .infinity)
+                                                .padding()
+                                                .background(selectedAnswer == answer.text
+                                                            ? (answer.isCorrect ? Color.green.opacity(0.8) : Color.red.opacity(0.8))
+                                                            : Color.gray.opacity(0.2))
+                                                .cornerRadius(10)
+                                        }
                                     }
                                 }
+                                .padding(.horizontal, 10)
                             }
-                            .padding(.horizontal, 10)
                         }
+                        .padding(.top, 10)
                     }
-                    .padding(.top, 10)
                 }
-            }
-            .onAppear {
-                startTimer()
-            }
-            .navigationDestination(isPresented: $showResults) {
-                TestResultsView(
-                    correctAnswers: correctAnswers,
-                    incorrectAnswers: incorrectAnswers,
-                    timeTaken: timeTaken,
-                    onRestart: restartTest,
-                    onContinue: goToTestsView,
-                    onViewHistory: {
-                        if let entry = lastEntry {
-                            selectedEntry = entry
+                .navigationDestination(isPresented: $showResults) {
+                    TestResultsView(
+                        correctAnswers: correctAnswers,
+                        incorrectAnswers: incorrectAnswers,
+                        timeTaken: timeTaken,
+                        onRestart: restartTest,
+                        onContinue: goToTestsView,
+                        onViewHistory: {
+                            if let entry = lastEntry {
+                                selectedEntry = entry
+                            }
                         }
-                    }
-                )
-                .sheet(item: $selectedEntry) { item in
-                    TestHistoryView(
-                        history: item.answers,
-                        correctAnswers: item.correctAnswers,
-                        incorrectAnswers: item.incorrectAnswers,
-                        topic: "Тест от ИИ",
-                        timeTaken: item.timeTaken
                     )
+                    .sheet(item: $selectedEntry) { item in
+                        TestHistoryView(
+                            history: item.answers,
+                            correctAnswers: item.correctAnswers,
+                            incorrectAnswers: item.incorrectAnswers,
+                            topic: "Тест от ИИ",
+                            timeTaken: item.timeTaken
+                        )
+                    }
                 }
+                .navigationBarHidden(true)
             }
-            .navigationBarHidden(true)
+        }
+        .onAppear {
+            loadQuestions()
         }
         .navigationBarHidden(true)
+    }
+
+    private func loadQuestions() {
+        Task {
+            isLoading = true
+            do {
+                let fetchedQuestions = try await QuestionService.shared.fetchAIQuestions()
+                questions = Array(fetchedQuestions.prefix(10))
+                isLoading = false
+                startTimer()
+            } catch {
+                errorMessage = "Не удалось загрузить вопросы."
+                isLoading = false
+            }
+        }
     }
 
     private func handleAnswerSelection(_ answer: Answer) {
@@ -204,7 +232,7 @@ struct AITestView: View {
         showResults = false
         timeRemaining = 300
         isAnswerSelected = false
-        startTimer()
+        loadQuestions()
     }
 
     private func goToTestsView() {
