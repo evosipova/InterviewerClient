@@ -13,7 +13,6 @@ struct OpenAIChatMessage: Codable {
 
 struct InterviewRequest: Codable {
     let answer: String
-    let assistantType: AssistantType
 }
 
 struct InterviewResponse: Codable {
@@ -23,11 +22,9 @@ struct InterviewResponse: Codable {
 class OpenAIService: ObservableObject {
     @Published var gptResponse: String = ""
 
-    private let url = URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/interview")!
-
     func sendMessageToGPT(answer: String, assistantRole: ChatView.AssistantType) async throws -> String {
-        let backendAssistantType = mapToBackendAssistant(assistantRole)
-        let body = InterviewRequest(answer: answer, assistantType: backendAssistantType)
+        let url = mapToBackendURL(for: assistantRole)
+        let body = InterviewRequest(answer: answer)
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -50,14 +47,14 @@ class OpenAIService: ObservableObject {
         return decoded.question
     }
 
-    private func mapToBackendAssistant(_ role: ChatView.AssistantType) -> AssistantType {
+    private func mapToBackendURL(for role: ChatView.AssistantType) -> URL {
         switch role {
         case .hr:
-            return .hr
+            return URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/hr-interview")!
         case .technical:
-            return .technical
+            return URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/tech-interview")!
         case .algorithms:
-            return .algorithms
+            return URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/interview")!
         }
     }
 }
