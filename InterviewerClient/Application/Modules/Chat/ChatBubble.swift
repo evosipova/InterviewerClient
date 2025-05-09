@@ -3,25 +3,51 @@ import SwiftUI
 struct ChatBubble: View {
     var message: String
     var isUser: Bool
-    
+
+    @State private var showCopiedConfirmation = false
+
     var body: some View {
-        HStack {
+        HStack(alignment: .bottom, spacing: isUser ? 0 : 4) {
             if isUser {
                 Spacer()
                 Text(message.replacingOccurrences(of: "🧑‍💻 ", with: ""))
                     .padding()
                     .background(Color.blue.opacity(0.2))
                     .cornerRadius(12)
-                    .frame(maxWidth: 250, alignment: .trailing)
             } else {
                 Text(message.replacingOccurrences(of: "🤖 ", with: ""))
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(12)
-                    .frame(maxWidth: 250, alignment: .leading)
+                    .alignmentGuide(.bottom) { d in d[.bottom] }
+
+                Button(action: {
+                    let cleanMessage = message.replacingOccurrences(of: "🤖 ", with: "")
+                    UIPasteboard.general.string = cleanMessage
+                    withAnimation {
+                        showCopiedConfirmation = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        withAnimation {
+                            showCopiedConfirmation = false
+                        }
+                    }
+                }) {
+                    Image(systemName: showCopiedConfirmation ? "checkmark" : "doc.on.doc")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(.gray)
+                }
+                .alignmentGuide(.bottom) { d in d[.bottom] }
+                .padding(.leading, 2)
+            }
+
+            if !isUser {
                 Spacer()
             }
         }
+        .padding(.horizontal, 8)
     }
 }
 
