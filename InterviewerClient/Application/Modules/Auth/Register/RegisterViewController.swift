@@ -14,7 +14,7 @@ class RegisterViewController: UIViewController {
         )
 
         let hostingController = UIHostingController(
-            rootView: registerView.environmentObject(UserProfile.shared)
+            rootView: registerView.environmentObject(UserProfileModel.shared)
         )
         addChild(hostingController)
         view.addSubview(hostingController.view)

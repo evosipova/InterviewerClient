@@ -14,7 +14,7 @@ class ProfileSetupViewController: UIViewController {
         )
 
         let hostingController = UIHostingController(
-            rootView: profileSetupView.environmentObject(UserProfile.shared)
+            rootView: profileSetupView.environmentObject(UserProfileModel.shared)
         )
 
         addChild(hostingController)

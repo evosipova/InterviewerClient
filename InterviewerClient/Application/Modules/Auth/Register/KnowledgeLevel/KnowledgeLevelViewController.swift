@@ -14,7 +14,7 @@ class KnowledgeLevelViewController: UIViewController {
         )
 
         let hostingController = UIHostingController(
-            rootView: knowledgeLevelView.environmentObject(UserProfile.shared)
+            rootView: knowledgeLevelView.environmentObject(UserProfileModel.shared)
         )
 
         addChild(hostingController)

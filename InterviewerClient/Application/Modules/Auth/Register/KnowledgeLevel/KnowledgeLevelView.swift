@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct KnowledgeLevelView: View {
-    @EnvironmentObject var userProfile: UserProfile
+    @EnvironmentObject var userProfile: UserProfileModel
     @Environment(\.colorScheme) var colorScheme
     @State private var isLoading = false
     @State private var errorMessage: String? = nil

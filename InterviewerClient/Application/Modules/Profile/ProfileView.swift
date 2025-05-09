@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var coordinator: AppCoordinator
-    @ObservedObject var userProfile = UserProfile.shared
+    @ObservedObject var userProfile = UserProfileModel.shared
 
     @AppStorage("selectedTheme") private var selectedTheme: String = "Системная"
     @State private var showHistorySheet = false

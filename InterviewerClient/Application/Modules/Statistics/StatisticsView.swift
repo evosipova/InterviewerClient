@@ -3,7 +3,7 @@ import SwiftUI
 struct StatisticsView: View {
     @State private var sessions: [TestSession] = []
     @State private var showLeaderboard = false
-    @ObservedObject var userProfile = UserProfile.shared
+    @ObservedObject var userProfile = UserProfileModel.shared
 
     var totalCorrect: Int {
         sessions.reduce(0) { $0 + $1.correctAnswers }
