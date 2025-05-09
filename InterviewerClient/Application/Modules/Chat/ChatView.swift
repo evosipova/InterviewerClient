@@ -1,5 +1,18 @@
 import SwiftUI
 
+struct ShortcutLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 8) {
+            configuration.icon
+                .foregroundColor(.blue)
+            configuration.title
+                .foregroundColor(.blue)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+    }
+}
+
 struct ChatView: View {
     enum AssistantType: String, CaseIterable {
         case hr = "📄 HR-собеседование"
@@ -16,6 +29,7 @@ struct ChatView: View {
     @State private var textFieldHeight: CGFloat = 50
     @StateObject private var openAI = OpenAIService()
     @State private var hasStartedChat = false
+    @State private var showShortcuts = false
 
     var body: some View {
         NavigationView {
@@ -123,15 +137,27 @@ struct ChatView: View {
             }
             .navigationBarTitle("Чат", displayMode: .inline)
             .navigationBarItems(
-                leading: Button(action: { showChatHistory = true }) {
-                    Image(systemName: "list.bullet")
-                        .font(.title2)
-                        .foregroundColor(.blue)
-                },
-                trailing: Button(action: createNewChat) {
-                    Image(systemName: "plus")
-                        .font(.title2)
-                        .foregroundColor(.blue)
+                leading:
+                    Button(action: { showChatHistory = true }) {
+                        Image(systemName: "list.bullet")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    },
+                trailing: HStack(spacing: 16) {
+                    Button(action: {
+                        withAnimation {
+                            showShortcuts.toggle()
+                        }
+                    }) {
+                        Image(systemName: "questionmark.circle")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    }
+                    Button(action: createNewChat) {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    }
                 }
             )
             .sheet(isPresented: $showChatHistory, onDismiss: handleChatHistoryDismiss) {
@@ -139,8 +165,62 @@ struct ChatView: View {
             }
             .onTapGesture {
                 hideKeyboard()
+                withAnimation { showShortcuts = false }
             }
+            .overlay(
+                GeometryReader { geo in
+                    if showShortcuts {
+                        ZStack {
+                            Color.black.opacity(0.001)
+                                .ignoresSafeArea()
+                                .onTapGesture {
+                                    showShortcuts = false
+                                }
+
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Button(action: {
+                                            sendShortcut("Давайте начнём интервью.")
+                                        }) {
+                                            Label("Начать интервью", systemImage: "play.fill")
+                                                .labelStyle(ShortcutLabelStyle())
+                                        }
+
+                                        Divider()
+
+                                        Button(action: {
+                                            sendShortcut("Спасибо! На этом интервью можно закончить.")
+                                        }) {
+                                            Label("Завершить интервью", systemImage: "stop.fill")
+                                                .labelStyle(ShortcutLabelStyle())
+                                        }
+                                    }
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.white)
+                                            .shadow(radius: 5)
+                                    )
+                                    .fixedSize()
+                                    .padding(.top, 8)
+                                    .padding(.trailing, 8)
+                                }
+                                Spacer()
+                            }
+                            .frame(width: geo.size.width, height: geo.size.height, alignment: .topTrailing)
+                        }
+                    }
+                }
+            )
+
         }
+    }
+
+    private func sendShortcut(_ text: String) {
+        showShortcuts = false
+        messageText = text
+        sendMessage()
     }
 
     private func sendMessage() {
