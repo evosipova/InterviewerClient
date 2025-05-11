@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct LeaderBoardView: View {
+    @EnvironmentObject var userProfile: UserProfileModel
     @State private var sortByTime = false
 
     let currentUserName: String
@@ -9,7 +10,12 @@ struct LeaderBoardView: View {
 
     var body: some View {
         let userStats = [
-            UserStatsModel(name: currentUserName, correctAnswers: correctAnswers, totalTime: totalTime)
+            UserStatsModel(
+                name: currentUserName,
+                correctAnswers: correctAnswers,
+                totalTime: totalTime,
+                profileImage: UserProfileModel.shared.profileImage
+            )
         ]
 
         let sortedStats = sortByTime ?

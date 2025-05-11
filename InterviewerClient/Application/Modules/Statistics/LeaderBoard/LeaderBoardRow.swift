@@ -7,19 +7,29 @@ struct LeaderBoardRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            HStack(spacing: 4) {
-                Text("\(index + 1)")
-                    .bold()
-
+            Group {
                 if index == 0 {
                     Text("🥇")
                 } else if index == 1 {
                     Text("🥈")
                 } else if index == 2 {
                     Text("🥉")
+                } else {
+                    Spacer().frame(width: 20)
                 }
             }
-            .frame(width: 50, alignment: .leading)
+            .frame(width: 24)
+
+            Text("\(index + 1)")
+                .bold()
+                .frame(width: 12, alignment: .leading)
+
+            Image(uiImage: user.profileImage ?? UIImage(systemName: "person.crop.circle.fill")!)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 36, height: 36)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(Color.gray.opacity(0.4), lineWidth: 1))
 
             Text(user.name)
                 .font(.headline)
@@ -45,9 +55,27 @@ struct LeaderBoardRow: View {
 
 #Preview {
     VStack(spacing: 8) {
-        LeaderBoardRow(index: 0, user: UserStatsModel(name: "Лиза", correctAnswers: 80, totalTime: 7200), sortByTime: false)
-        LeaderBoardRow(index: 1, user: UserStatsModel(name: "Денис", correctAnswers: 70, totalTime: 6500), sortByTime: false)
-        LeaderBoardRow(index: 2, user: UserStatsModel(name: "Катя", correctAnswers: 65, totalTime: 5000), sortByTime: false)
+        LeaderBoardRow(
+            index: 0,
+            user: UserStatsModel(
+                name: "Лиза",
+                correctAnswers: 80,
+                totalTime: 7200,
+                profileImage: UIImage(systemName: "person.crop.circle")
+            ),
+            sortByTime: false
+        )
+
+        LeaderBoardRow(
+            index: 1,
+            user: UserStatsModel(
+                name: "Денис",
+                correctAnswers: 70,
+                totalTime: 6500,
+                profileImage: nil
+            ),
+            sortByTime: false
+        )
     }
     .padding()
 }
