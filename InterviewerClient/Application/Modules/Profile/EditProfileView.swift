@@ -103,7 +103,7 @@ struct EditProfileView: View {
                         )
                         .padding(.horizontal, 20)
                         .onChange(of: tempFullName) {
-                            nameTooLong = tempFullName.count > 10
+                            nameTooLong = tempFullName.count > 15
                             nameIsEmpty = tempFullName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                         }
 
@@ -116,7 +116,7 @@ struct EditProfileView: View {
                     if nameTooLong {
                         HStack {
                             Spacer()
-                            Text("Имя не может быть длиннее 10 символов.")
+                            Text("Имя не может быть длиннее 15 символов.")
                                 .font(.callout)
                                 .foregroundColor(.red)
                                 .multilineTextAlignment(.center)

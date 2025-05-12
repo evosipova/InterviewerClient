@@ -100,9 +100,17 @@ struct ProfileSetupView: View {
         fullNameHasError = false
         errorMessage = nil
 
-        if userProfile.fullName.trimmingCharacters(in: .whitespaces).isEmpty {
+        let trimmedName = userProfile.fullName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if trimmedName.isEmpty {
             fullNameHasError = true
             errorMessage = "Пожалуйста, укажите ваше имя.\nЭто обязательное поле."
+            return
+        }
+
+        if trimmedName.count > 15 {
+            fullNameHasError = true
+            errorMessage = "Имя не может быть длиннее 15 символов."
             return
         }
 
