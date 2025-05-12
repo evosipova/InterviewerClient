@@ -58,6 +58,7 @@ struct ChatHistoryView: View {
             .navigationBarItems(
                 trailing: Button(action: deleteAllChats) {
                     Image(systemName: "trash")
+                        .font(.title2)
                         .foregroundColor(.red)
                 }
             )
