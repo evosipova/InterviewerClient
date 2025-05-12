@@ -11,7 +11,7 @@ class UserProfileModel: ObservableObject {
     init(
         email: String = "",
         password: String = "",
-        fullName: String = "",
+        fullName: String = "Meow",
         profileImage: UIImage? = nil,
         knowledgeLevel: String = "Junior"
     ) {

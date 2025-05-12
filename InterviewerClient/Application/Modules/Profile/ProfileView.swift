@@ -47,29 +47,6 @@ struct ProfileView: View {
                     }
                     .frame(maxWidth: .infinity)
 
-                    NavigationLink(
-                        destination: EditProfileView(
-                            fullName: $userProfile.fullName,
-                            knowledgeLevel: $userProfile.knowledgeLevel,
-                            profileImage: $userProfile.profileImage
-                        )
-                    ) {
-                        HStack {
-                            Image(systemName: "pencil")
-                                .foregroundColor(.primary)
-                            Text("Редактировать профиль")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.primary)
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(10)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 5)
-
                     Button(action: { showHistorySheet.toggle() }) {
                         HStack {
                             Image(systemName: "clock.fill")
@@ -143,6 +120,29 @@ struct ProfileView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
                     .padding(.horizontal, 20)
+
+                    NavigationLink(
+                        destination: EditProfileView(
+                            fullName: $userProfile.fullName,
+                            knowledgeLevel: $userProfile.knowledgeLevel,
+                            profileImage: $userProfile.profileImage
+                        )
+                    ) {
+                        HStack {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.primary)
+                            Text("Редактировать профиль")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.primary)
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 5)
 
                     Button(action: {
                         coordinator.logout()
