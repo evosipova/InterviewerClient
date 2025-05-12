@@ -46,7 +46,7 @@ struct ProfileSetupView: View {
                     .foregroundColor(.primary)
                     .padding(.horizontal, 20)
 
-                TextField("ФИО", text: $userProfile.fullName)
+                TextField("Имя", text: $userProfile.fullName)
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)

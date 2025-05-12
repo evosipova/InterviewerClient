@@ -31,38 +31,44 @@ struct ProfileView: View {
                                 .padding(.top, 10)
                         }
 
-                        ZStack(alignment: .topTrailing) {
-                            VStack(spacing: 4) {
-                                Text(userProfile.fullName)
-                                    .font(.title)
-                                    .bold()
-                                    .multilineTextAlignment(.center)
-                                    .frame(maxWidth: .infinity)
+                        VStack(spacing: 4) {
+                            Text(userProfile.fullName.prefix(30))
+                                .font(.title)
+                                .bold()
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .frame(maxWidth: .infinity, alignment: .center)
 
-                                Text(userProfile.knowledgeLevel)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-
-                            NavigationLink(
-                                destination: EditProfileView(
-                                    fullName: $userProfile.fullName,
-                                    knowledgeLevel: $userProfile.knowledgeLevel,
-                                    profileImage: $userProfile.profileImage
-                                )
-                            ) {
-                                Image(systemName: "pencil")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 18, height: 18)
-                                    .foregroundColor(.gray)
-                                    .padding(.top, 20)
-                            }
+                            Text(userProfile.knowledgeLevel)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
                         }
-                        .frame(maxWidth: 120)
-
+                        .padding(.horizontal, 20)
                     }
                     .frame(maxWidth: .infinity)
+
+                    NavigationLink(
+                        destination: EditProfileView(
+                            fullName: $userProfile.fullName,
+                            knowledgeLevel: $userProfile.knowledgeLevel,
+                            profileImage: $userProfile.profileImage
+                        )
+                    ) {
+                        HStack {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.primary)
+                            Text("Редактировать профиль")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.primary)
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 5)
 
                     Button(action: { showHistorySheet.toggle() }) {
                         HStack {
@@ -79,11 +85,10 @@ struct ProfileView: View {
                         .cornerRadius(10)
                     }
                     .padding(.horizontal, 20)
-                    .padding(.top, 5)
                     .sheet(isPresented: $showHistorySheet) {
                         TestHistoryViewProfile()
                     }
-                    
+
                     Button(action: { showNotificationsSheet.toggle() }) {
                         HStack {
                             Image(systemName: "bell.fill")
@@ -102,12 +107,12 @@ struct ProfileView: View {
                     .sheet(isPresented: $showNotificationsSheet) {
                         NotificationSettingsView()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Тема оформления")
                             .font(.headline)
                             .foregroundColor(.primary)
-                        
+
                         HStack {
                             ForEach(themes, id: \.self) { theme in
                                 Button(action: {
@@ -138,7 +143,7 @@ struct ProfileView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
                     .padding(.horizontal, 20)
-                    
+
                     Button(action: {
                         coordinator.logout()
                     }) {
@@ -158,11 +163,11 @@ struct ProfileView: View {
             .background(Color(.systemBackground))
         }
     }
-    
+
     private func applyTheme(_ theme: String) {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else { return }
-        
+
         switch theme {
         case "Светлая":
             window.overrideUserInterfaceStyle = .light
