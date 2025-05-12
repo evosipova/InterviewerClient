@@ -10,11 +10,24 @@ struct ChatHistoryView: View {
         NavigationView {
             VStack {
                 if chats.isEmpty {
-                    Text("Нет сохранённых чатов")
-                        .foregroundColor(.gray)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, -50)
+                    GeometryReader { geometry in
+                        VStack {
+                            Spacer()
+                            VStack(spacing: 12) {
+                                Image(systemName: "ellipsis.message")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.gray)
+                                Text("Нет сохранённых чатов")
+                                    .foregroundColor(.gray)
+                                    .font(.headline)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                            Spacer()
+                        }
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                    }
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 10) {
@@ -57,7 +70,7 @@ struct ChatHistoryView: View {
 
     private func deleteAllChats() {
         chats.removeAll()
-        onDeleteAll()  
+        onDeleteAll()
     }
 }
 

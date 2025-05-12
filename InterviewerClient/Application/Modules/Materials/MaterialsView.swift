@@ -54,19 +54,29 @@ struct MaterialsView: View {
                                 .bold()
                                 .padding(.horizontal, 20)
                                 .padding(.top, 10)
-                            
-                            ForEach(filteredRecommendations) { material in
-                                MaterialRowView(
-                                    item: material,
-                                    onTap: {
-                                        selectedItem = material
-                                        showDetail = true
-                                    },
-                                    onLikeToggle: {
-                                        toggleLike(item: material, in: &recommendedMaterials)
-                                    }
-                                )
+
+                            if filteredRecommendations.isEmpty {
+                                HStack {
+                                    Spacer()
+                                    Text("Ничего не найдено")
+                                        .foregroundColor(.gray)
+                                    Spacer()
+                                }
                                 .padding(.horizontal, 20)
+                            } else {
+                                ForEach(filteredRecommendations) { material in
+                                    MaterialRowView(
+                                        item: material,
+                                        onTap: {
+                                            selectedItem = material
+                                            showDetail = true
+                                        },
+                                        onLikeToggle: {
+                                            toggleLike(item: material, in: &recommendedMaterials)
+                                        }
+                                    )
+                                    .padding(.horizontal, 20)
+                                }
                             }
                         }
                     }
