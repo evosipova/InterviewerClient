@@ -25,8 +25,29 @@ struct AITestView: View {
     var body: some View {
         NavigationStack {
             if isLoading {
-                ProgressView("Загрузка вопросов...")
-                    .navigationBarHidden(true)
+                ZStack {
+                    Color(.systemBackground)
+                        .ignoresSafeArea()
+
+                    VStack(spacing: 16) {
+                        Image(systemName: "brain.head.profile")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 60, height: 60)
+                            .foregroundColor(.blue)
+                            .opacity(0.8)
+
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                            .scaleEffect(1.5)
+
+                        Text("Готовим вопросы с помощью ИИ…")
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                }
+                .navigationBarHidden(true)
             } else if let errorMessage = errorMessage {
                 VStack {
                     Text(errorMessage)
@@ -146,12 +167,11 @@ struct AITestView: View {
             do {
                 let fetchedQuestions = try await QuestionService.shared.fetchAIQuestions()
                 questions = Array(fetchedQuestions.prefix(10))
-                isLoading = false
-                startTimer()
             } catch {
-                errorMessage = "Не удалось загрузить вопросы."
-                isLoading = false
+                questions = Array(QuestionLoader.loadAllQuestions().shuffled().prefix(10))
             }
+            isLoading = false
+            startTimer()
         }
     }
 
