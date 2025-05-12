@@ -5,7 +5,7 @@ struct NotificationSettingsView: View {
     @State private var isNotificationsEnabled: Bool = false
     @State private var notifications: [NotificationItem] = []
     @State private var showAddNotificationPopup = false
-    
+
     private let notificationMessages = [
         "Пора начать занятие! Поехали 💪",
         "Удели 5 минут улучшению своих навыков 🧠",
@@ -13,7 +13,7 @@ struct NotificationSettingsView: View {
         "Прогресс начинается с действий! 🔥",
         "Ты сможешь! Начни прямо сейчас ⏳"
     ]
-    
+
     var body: some View {
         ZStack {
             NavigationView {
@@ -22,30 +22,23 @@ struct NotificationSettingsView: View {
                         Toggle("Напоминания", isOn: $isNotificationsEnabled)
                             .onChange(of: isNotificationsEnabled) { handleNotificationToggle() }
                     }
-                    
-                    if isNotificationsEnabled {
+
+                    if isNotificationsEnabled && !notifications.isEmpty {
                         Section {
-                            if notifications.isEmpty {
-                                Text("Пока уведомлений не создано. Создайте, чтобы не забывать про тренировки!")
-                                    .foregroundColor(.gray)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.vertical, 10)
-                            } else {
-                                ForEach(notifications, id: \.id) { notification in
-                                    HStack {
-                                        Text(notification.displayText)
-                                            .font(.body)
-                                        Spacer()
-                                    }
-                                    .padding()
-                                    .background(Color.gray.opacity(0.2))
-                                    .cornerRadius(10)
-                                    .swipeActions {
-                                        Button(role: .destructive) {
-                                            removeNotification(notification)
-                                        } label: {
-                                            Label("Удалить", systemImage: "trash")
-                                        }
+                            ForEach(notifications, id: \.id) { notification in
+                                HStack {
+                                    Text(notification.displayText)
+                                        .font(.body)
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(10)
+                                .swipeActions {
+                                    Button(role: .destructive) {
+                                        removeNotification(notification)
+                                    } label: {
+                                        Label("Удалить", systemImage: "trash")
                                     }
                                 }
                             }
@@ -62,7 +55,7 @@ struct NotificationSettingsView: View {
                                 .foregroundColor(.red)
                         }
                     ) : AnyView(EmptyView()),
-                    
+
                     trailing: isNotificationsEnabled ? AnyView(
                         Button(action: { showAddNotificationPopup = true }) {
                             Image(systemName: "plus")
@@ -71,15 +64,33 @@ struct NotificationSettingsView: View {
                         }
                     ) : AnyView(EmptyView())
                 )
-                .animation(.easeInOut, value: isNotificationsEnabled) 
                 .onAppear { loadNotificationSettings() }
             }
-            
+
+            if isNotificationsEnabled && notifications.isEmpty {
+                GeometryReader { geometry in
+                    VStack(spacing: 12) {
+                        Image(systemName: "bell.slash")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray)
+                        Text("Пока тишина.\nДобавь напоминание и держи фокус!")
+                            .foregroundColor(.gray)
+                            .font(.headline)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .position(
+                        x: geometry.size.width / 2,
+                        y: geometry.size.height / 2
+                    )
+                }
+            }
+
             if showAddNotificationPopup {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
                     .onTapGesture { showAddNotificationPopup = false }
-                
+
                 AddNotificationPopup { newNotification in
                     notifications.append(newNotification)
                     saveNotificationSettings()
@@ -98,7 +109,7 @@ struct NotificationSettingsView: View {
         saveNotificationSettings()
         removeScheduledNotifications()
     }
-    
+
     private func handleNotificationToggle() {
         if isNotificationsEnabled {
             requestNotificationPermission()
@@ -110,7 +121,7 @@ struct NotificationSettingsView: View {
         }
         saveNotificationSettings()
     }
-    
+
     private func requestNotificationPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, _ in
             if !granted {
@@ -120,7 +131,7 @@ struct NotificationSettingsView: View {
             }
         }
     }
-    
+
     private func scheduleNotification(_ notification: NotificationItem) {
         for day in notification.sortedDays() {
             let content = UNMutableNotificationContent()
@@ -147,16 +158,15 @@ struct NotificationSettingsView: View {
         }
     }
 
-    
     private func removeScheduledNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
-    
+
     private func dayToNumber(_ day: String) -> Int {
         let mapping: [String: Int] = ["Вс": 1, "Пн": 2, "Вт": 3, "Ср": 4, "Чт": 5, "Пт": 6, "Сб": 7]
         return mapping[day] ?? 2
     }
-    
+
     private func removeNotification(_ notification: NotificationItem) {
         notifications.removeAll { $0.id == notification.id }
         saveNotificationSettings()
@@ -165,13 +175,13 @@ struct NotificationSettingsView: View {
             scheduleNotification(notification)
         }
     }
-    
+
     private func saveNotificationSettings() {
         UserDefaults.standard.set(isNotificationsEnabled, forKey: "notificationsEnabled")
         let encodedData = try? JSONEncoder().encode(notifications)
         UserDefaults.standard.set(encodedData, forKey: "notificationsList")
     }
-    
+
     private func loadNotificationSettings() {
         isNotificationsEnabled = UserDefaults.standard.bool(forKey: "notificationsEnabled")
         if let savedData = UserDefaults.standard.data(forKey: "notificationsList"),
