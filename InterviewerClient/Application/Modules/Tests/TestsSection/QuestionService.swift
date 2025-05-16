@@ -3,7 +3,7 @@ import Foundation
 class QuestionService {
     static let shared = QuestionService()
 
-    private let generateTestURL = URL(string: "https://confusedly-free-bloodhound.cloudpub.ru/ai/generate-test")!
+    private let generateTestURL = URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/generate-test")!
 
     func fetchAIQuestions() async throws -> [Question] {
         var request = URLRequest(url: generateTestURL)

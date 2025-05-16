@@ -4,7 +4,7 @@ struct TestBlockView: View {
     var title: String
     var subtitle: String
     var color: Color
-    var iconName: String 
+    var iconName: String
 
     var body: some View {
         HStack {
@@ -13,15 +13,15 @@ struct TestBlockView: View {
                     .font(.title2)
                     .bold()
                     .foregroundColor(.white)
-                
+
                 Text(subtitle)
                     .font(.footnote)
                     .foregroundColor(.white.opacity(0.8))
             }
-            
+
             Spacer()
-            
-            Image(systemName: iconName) 
+
+            Image(systemName: iconName)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 40, height: 40)

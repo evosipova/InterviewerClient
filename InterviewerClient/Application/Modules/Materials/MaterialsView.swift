@@ -73,7 +73,7 @@ struct MaterialsView: View {
                                             showDetail = true
                                         },
                                         onLikeToggle: {
-                                            toggleLike(item: material, in: &recommendedMaterials)
+                                            toggleLike(item: material)
                                         }
                                     )
                                     .padding(.horizontal, 20)
@@ -105,7 +105,8 @@ struct MaterialsView: View {
                                         showDetail = true
                                     },
                                     onLikeToggle: {
-                                        toggleLike(item: material, in: &allMaterials)
+//                                        toggleLike(item: material, in: &allMaterials)
+                                        toggleLike(item: material)
                                     }
                                 )
                                 .padding(.horizontal, 20)
@@ -119,12 +120,15 @@ struct MaterialsView: View {
                 loadMaterials()
             }
             .sheet(isPresented: $showLikedSheet) {
-                let likedMaterials = allMaterials.filter { $0.isLiked }
+                let likedMaterials = (allMaterials + recommendedMaterials).filter { $0.isLiked }
                 LikedMaterialsSheetView(
                     likedItems: likedMaterials,
                     onToggleLike: { item in
                         if let i = allMaterials.firstIndex(where: { $0.id == item.id }) {
                             allMaterials[i].isLiked.toggle()
+                        }
+                        if let i = recommendedMaterials.firstIndex(where: { $0.id == item.id }) {
+                            recommendedMaterials[i].isLiked.toggle()
                         }
                     }
                 )
@@ -151,13 +155,17 @@ struct MaterialsView: View {
         let lower = searchText.lowercased()
         return array.filter { $0.title.lowercased().contains(lower) || $0.subtitle.lowercased().contains(lower) }
     }
-    
-    private func toggleLike(item: MaterialItem, in array: inout [MaterialItem]) {
-        if let index = array.firstIndex(where: { $0.id == item.id }) {
-            array[index].isLiked.toggle()
+
+    private func toggleLike(item: MaterialItem) {
+        if let index = allMaterials.firstIndex(where: { $0.id == item.id }) {
+            allMaterials[index].isLiked.toggle()
+        }
+
+        if let index = recommendedMaterials.firstIndex(where: { $0.id == item.id }) {
+            recommendedMaterials[index].isLiked.toggle()
         }
     }
-    
+
     private func loadMaterials() {
         guard let url = Bundle.main.url(forResource: "materials", withExtension: "json") else {
             return
