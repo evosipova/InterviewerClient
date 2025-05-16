@@ -18,7 +18,8 @@ struct MaterialsView: View {
     @State private var showLikedSheet = false
     @State private var showDetail = false
     @State private var selectedItem: MaterialItem?
-    
+    @ObservedObject var userProfile = UserProfileModel.shared
+
     @State private var recommendedMaterials: [MaterialItem] = []
     @State private var allMaterials: [MaterialItem] = []
     
@@ -165,8 +166,8 @@ struct MaterialsView: View {
             let data = try Data(contentsOf: url)
             let decodedData = try JSONDecoder().decode(MaterialsResponse.self, from: data)
             
-            self.recommendedMaterials = decodedData.materials.filter { $0.level.lowercased() == "junior" }
-            self.allMaterials = decodedData.materials.filter { $0.level.lowercased() != "junior" }
+            self.recommendedMaterials = decodedData.materials.filter { $0.level.lowercased() == userProfile.knowledgeLevel.lowercased() }
+            self.allMaterials = decodedData.materials.filter { $0.level.lowercased() != userProfile.knowledgeLevel.lowercased() }
         } catch {}
     }
 }
