@@ -50,11 +50,11 @@ class OpenAIService: ObservableObject {
     private func mapToBackendURL(for role: ChatView.AssistantType) -> URL {
         switch role {
         case .hr:
-            return URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/hr-interview")!
+            return URL(string: "https://confusedly-free-bloodhound.cloudpub.ru/ai/hr-interview")!
         case .technical:
-            return URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/tech-interview")!
+            return URL(string: "https://confusedly-free-bloodhound.cloudpub.ru/ai/tech-interview")!
         case .algorithms:
-            return URL(string: "https://truculently-neat-roach.cloudpub.ru/ai/interview")!
+            return URL(string: "https://confusedly-free-bloodhound.cloudpub.ru/ai/interview")!
         }
     }
 }

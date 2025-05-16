@@ -11,9 +11,9 @@ class UserProfileModel: ObservableObject {
     init(
         email: String = "",
         password: String = "",
-        fullName: String = "Meow",
+        fullName: String = "",
         profileImage: UIImage? = nil,
-        knowledgeLevel: String = "Junior"
+        knowledgeLevel: String = ""
     ) {
         self.email = email
         self.password = password

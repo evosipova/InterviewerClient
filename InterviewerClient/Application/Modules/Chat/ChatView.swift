@@ -1,17 +1,5 @@
 import SwiftUI
-
-struct ShortcutLabelStyle: LabelStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: 8) {
-            configuration.icon
-                .foregroundColor(.blue)
-            configuration.title
-                .foregroundColor(.blue)
-        }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 12)
-    }
-}
+import Speech
 
 struct ChatView: View {
     enum AssistantType: String, CaseIterable {
@@ -30,6 +18,20 @@ struct ChatView: View {
     @StateObject private var openAI = OpenAIService()
     @State private var hasStartedChat = false
     @State private var showShortcuts = false
+    @StateObject private var speechRecognizer = SpeechRecognizer()
+
+    private var displayedText: Binding<String> {
+        Binding(
+            get: {
+                speechRecognizer.isRecording
+                ? messageText + speechRecognizer.transcribedText
+                : messageText
+            },
+            set: { newValue in
+                messageText = newValue
+            }
+        )
+    }
 
     var body: some View {
         NavigationView {
@@ -91,6 +93,9 @@ struct ChatView: View {
                             .onChange(of: textFieldHeight) {
                                 scrollToBottom(proxy)
                             }
+                            .onChange(of: speechRecognizer.transcribedText) { _, _ in
+                                scrollToBottom(proxy)
+                            }
                         }
                     }
                 }
@@ -98,29 +103,51 @@ struct ChatView: View {
                 Divider()
 
                 HStack(alignment: .bottom, spacing: 10) {
-                    ZStack(alignment: .leading) {
-                        if messageText.isEmpty {
+                    ZStack(alignment: .topLeading) {
+                        if messageText.isEmpty && speechRecognizer.transcribedText.isEmpty {
                             Text("Введите сообщение...")
                                 .padding(.leading, 14)
-                                .padding(.vertical, 10)
+                                .padding(.top, 12)
                                 .foregroundColor(.gray)
                                 .allowsHitTesting(false)
                         }
 
-                        TextEditor(text: $messageText)
-                            .frame(minHeight: 40, maxHeight: 100)
-                            .padding(8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
-                            .opacity(messageText.isEmpty ? 0.6 : 1)
-                            .scrollContentBackground(.hidden)
-                            .onChange(of: messageText) {
-                                withAnimation {
-                                    adjustTextFieldHeight()
+                        VStack(alignment: .leading, spacing: 4) {
+                            TextEditor(text: displayedText)
+                                .frame(minHeight: 40, maxHeight: 100)
+                                .padding(8)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                                .opacity(1)
+                                .scrollContentBackground(.hidden)
+                                .onChange(of: messageText) { _, _ in
+                                    withAnimation {
+                                        adjustTextFieldHeight()
+                                    }
                                 }
-                            }
+                        }
+                        .padding(.top, 2)
                     }
                     .frame(maxHeight: textFieldHeight)
+
+                    Button(action: {
+                        if speechRecognizer.isRecording {
+                            speechRecognizer.stopRecording()
+                            messageText += (messageText.isEmpty ? "" : " ") + speechRecognizer.transcribedText
+                            speechRecognizer.transcribedText = ""
+                        } else {
+                            try? speechRecognizer.startRecording()
+                        }
+                    }) {
+                        Image(systemName: speechRecognizer.isRecording ? "mic.fill" : "mic")
+                            .font(.title2)
+                            .padding(14)
+                            .background(speechRecognizer.isRecording ? Color.red : Color.orange)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }
+                    .frame(height: textFieldHeight)
+                    .animation(.easeInOut(duration: 0.2), value: speechRecognizer.isRecording)
 
                     Button(action: sendMessage) {
                         Image(systemName: "paperplane.fill")
@@ -131,7 +158,6 @@ struct ChatView: View {
                             .clipShape(Circle())
                     }
                     .frame(height: textFieldHeight)
-                    .animation(.easeInOut, value: textFieldHeight)
                 }
                 .padding()
             }
@@ -291,8 +317,12 @@ struct ChatView: View {
     }
 
     private func adjustTextFieldHeight() {
+        let combinedText = messageText + speechRecognizer.transcribedText
         let maxHeight: CGFloat = 100
-        let newHeight = min(maxHeight, messageText.height(withConstrainedWidth: UIScreen.main.bounds.width - 100, font: .systemFont(ofSize: 17)))
+        let newHeight = min(maxHeight, combinedText.height(
+            withConstrainedWidth: UIScreen.main.bounds.width - 100,
+            font: .systemFont(ofSize: 17)
+        ))
         textFieldHeight = newHeight
     }
 
@@ -300,6 +330,12 @@ struct ChatView: View {
         withAnimation {
             proxy.scrollTo(messages.count - 1, anchor: .bottom)
         }
+    }
+}
+
+struct ChatView_Previews: PreviewProvider {
+    static var previews: some View {
+        ChatView()
     }
 }
 
@@ -313,11 +349,5 @@ extension String {
             context: nil
         )
         return ceil(boundingBox.height) + 25
-    }
-}
-
-struct ChatView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatView()
     }
 }

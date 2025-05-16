@@ -18,7 +18,7 @@ struct RegisterRequest: Codable {
 class AuthService {
     static let shared = AuthService()
 
-    private let loginURL = URL(string: "https://truculently-neat-roach.cloudpub.ru/auth/login")!
+    private let loginURL = URL(string: "https://confusedly-free-bloodhound.cloudpub.ru/auth/login")!
 
     func login(email: String, password: String) async throws -> String {
         let body = LoginRequest(email: email, password: password)
@@ -42,7 +42,7 @@ class AuthService {
 
     func register(email: String, password: String, name: String) async throws {
         let body = RegisterRequest(email: email, password: password, name: name)
-        var request = URLRequest(url: URL(string: "https://truculently-neat-roach.cloudpub.ru/auth/register")!)
+        var request = URLRequest(url: URL(string: "https://confusedly-free-bloodhound.cloudpub.ru/auth/register")!)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(body)

@@ -19,5 +19,11 @@
 			</array>
 		</dict>
 	</dict>
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Для использования голосового ввода и распознавания речи</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Для распознавания речи во время общения с ассистентом</string>
 </dict>
 </plist>
+

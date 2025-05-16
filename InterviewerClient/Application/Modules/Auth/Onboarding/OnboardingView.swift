@@ -5,8 +5,7 @@ struct OnboardingView: View {
     @Environment(\.colorScheme) var colorScheme
     var onLogin: () -> Void
     var onRegister: () -> Void
-    var onTest:() -> Void
-    
+
     let gifURL = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW1hN2dzb25kN3RqMXF3YjV2dTNjc3lvbHUzenZuaWs0OW9kOGJvcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/s99VUdNNp2kzYJDq4B/giphy.gif"
     
     var body: some View {
@@ -40,17 +39,6 @@ struct OnboardingView: View {
                         .cornerRadius(10)
                         .font(.headline)
                 }
-                
-                
-                Button(action: onTest) {
-                    Text("test")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .font(.headline)
-                }
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 30)
@@ -60,6 +48,6 @@ struct OnboardingView: View {
 
 struct OnboardingView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardingView(onLogin: {}, onRegister: {}, onTest: {})
+        OnboardingView(onLogin: {}, onRegister: {})
     }
 }
